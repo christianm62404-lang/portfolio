@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { MonoLabel, StatusDot } from "@/components/ui/primitives";
 import { StackDiagram } from "@/components/visuals/stack-diagram";
 import { usePointerFine } from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
 
 /**
@@ -79,30 +80,23 @@ export function Hero() {
         className="grid-field pointer-events-none absolute -inset-24 opacity-[0.55]"
         style={interactive ? { x: gridX, y: gridY } : undefined}
       />
-      <motion.div
+      <div
         aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: interactive
-            ? undefined
-            : "radial-gradient(60rem 40rem at 30% 20%, color-mix(in oklab, var(--color-signal) 7%, transparent), transparent 70%)",
-        }}
+        className={cn(
+          "pointer-events-none absolute inset-0",
+          !interactive && "signal-wash",
+        )}
       >
         {interactive ? (
           <motion.div
-            className="absolute size-[52rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              left: glowX,
-              top: glowY,
-              background:
-                "radial-gradient(circle, color-mix(in oklab, var(--color-signal) 9%, transparent), transparent 62%)",
-            }}
+            className="signal-field absolute size-[52rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{ left: glowX, top: glowY }}
           />
         ) : null}
-      </motion.div>
+      </div>
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-void to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-canvas to-transparent"
       />
 
       <div className="relative mx-auto grid w-full max-w-[1240px] items-center gap-14 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-20">

@@ -17,7 +17,7 @@ export function SiteFrameVisual({ url }: { url: string }) {
         </span>
       </figcaption>
 
-      <div className="flex flex-1 flex-col border border-line bg-void">
+      <div className="flex flex-1 flex-col border border-line bg-canvas">
         <div className="flex items-center gap-2 border-b border-line px-3 py-2">
           <span aria-hidden className="flex gap-1">
             {[0, 1, 2].map((dot) => (

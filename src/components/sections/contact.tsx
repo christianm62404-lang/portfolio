@@ -108,7 +108,7 @@ function ContactTile({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="group flex flex-col bg-void p-6 transition-colors duration-300 hover:bg-panel">
+    <div className="group flex flex-col bg-canvas p-6 transition-colors duration-300 hover:bg-panel">
       <MonoLabel>{label}</MonoLabel>
       <a
         href={href}

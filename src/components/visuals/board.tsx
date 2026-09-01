@@ -126,7 +126,7 @@ export function BoardVisual() {
           width={120}
           height={92}
           rx="2"
-          fill="var(--color-void)"
+          fill="var(--color-canvas)"
           stroke="var(--color-signal)"
           strokeWidth="1.1"
         />
@@ -165,7 +165,7 @@ export function BoardVisual() {
 
       {/* Instrument strip */}
       <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
-        <div className="border border-line bg-void px-3 py-2.5">
+        <div className="border border-line bg-canvas px-3 py-2.5">
           <div className="flex items-baseline justify-between">
             <MonoLabel>PWM · P1.0</MonoLabel>
             <span className="font-mono text-[0.6875rem] text-signal">{dutyPercent}% duty</span>
@@ -183,11 +183,13 @@ export function BoardVisual() {
           </svg>
         </div>
 
-        {/* Character-LCD readout */}
-        <div className="flex flex-col justify-center border border-line bg-[#0b1410] px-3 py-2.5 font-mono text-[0.6875rem] leading-relaxed text-live/90">
+        {/* Character-LCD readout. Colours are fixed rather than themed: this
+            is a backlit component on a breadboard, and it looks the same
+            whichever theme the page is in. */}
+        <div className="flex flex-col justify-center border border-line bg-[#0b1410] px-3 py-2.5 font-mono text-[0.6875rem] leading-relaxed text-[#6ee7a0]">
           <span>DIST {distanceCm.toFixed(1).padStart(5)} cm</span>
           <span>DUTY {String(dutyPercent).padStart(5)} %</span>
-          <span className="text-live/55">
+          <span className="text-[#6ee7a0]/60">
             ECHO {Math.round(echoMicroseconds(distanceCm)).toString().padStart(5)} us
           </span>
         </div>
@@ -238,7 +240,7 @@ function Block({
         width={w}
         height={h}
         rx="2"
-        fill="var(--color-void)"
+        fill="var(--color-canvas)"
         stroke="var(--color-line-bright)"
         strokeWidth="1"
       />

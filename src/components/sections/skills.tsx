@@ -148,7 +148,7 @@ export function Skills() {
                     visible: { opacity: 1, y: 0 },
                   }}
                   transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="border border-line bg-void px-3 py-2 text-[0.8125rem] text-ink-dim transition-colors duration-200 hover:border-signal/50 hover:text-ink"
+                  className="border border-line bg-canvas px-3 py-2 text-[0.8125rem] text-ink-dim transition-colors duration-200 hover:border-signal/50 hover:text-ink"
                 >
                   {item}
                 </motion.li>

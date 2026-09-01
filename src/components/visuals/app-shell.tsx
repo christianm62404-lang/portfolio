@@ -70,7 +70,7 @@ export function AppShellVisual() {
       </div>
 
       {/* Reduced app shell: rail, top bar, content. */}
-      <div className="flex min-h-0 flex-1 overflow-hidden border border-line bg-void">
+      <div className="flex min-h-0 flex-1 overflow-hidden border border-line bg-canvas">
         <nav
           aria-label="Application routes"
           className="w-[42%] shrink-0 border-r border-line p-2 sm:w-[46%] sm:p-3"

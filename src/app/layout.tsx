@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import { site } from "@/content/site";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import { Nav } from "@/components/layout/nav";
 import { ScrollProgress } from "@/components/layout/scroll-progress";
 import { Footer } from "@/components/layout/footer";
@@ -70,8 +71,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#08080a",
-  colorScheme: "dark",
+  // Matches the two page grounds, so browser chrome tracks the active theme.
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f4f1" },
+    { media: "(prefers-color-scheme: dark)", color: "#08080a" },
+  ],
+  colorScheme: "light dark",
   width: "device-width",
   initialScale: 1,
 };
@@ -103,10 +108,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${interTight.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/* Applies a stored theme choice before first paint, so a visitor who
+            chose light never sees a dark flash. It only sets an attribute on
+            <html>, which carries suppressHydrationWarning above. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="antialiased">
         <a
           href="#work"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[70] focus:border focus:border-signal focus:bg-void focus:px-4 focus:py-2 focus:text-sm"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[70] focus:border focus:border-signal focus:bg-canvas focus:px-4 focus:py-2 focus:text-sm"
         >
           Skip to main content
         </a>

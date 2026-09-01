@@ -29,7 +29,7 @@ export function Experience() {
             <RevealItem as="li" key={role.id} className="relative pb-14 pl-8 last:pb-0 sm:pl-10">
               <span
                 aria-hidden
-                className="absolute top-2 -left-[3px] size-[7px] rounded-full border border-signal bg-void"
+                className="absolute top-2 -left-[3px] size-[7px] rounded-full border border-signal bg-canvas"
               />
 
               <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">

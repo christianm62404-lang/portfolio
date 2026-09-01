@@ -91,7 +91,7 @@ export function StackDiagram({ className }: { className?: string }) {
                     "relative mt-1 grid size-3 shrink-0 place-items-center rounded-full border transition-colors duration-400",
                     isActive
                       ? "border-signal bg-signal"
-                      : "border-line-bright bg-void group-hover:border-ink-faint",
+                      : "border-line-bright bg-canvas group-hover:border-ink-faint",
                   )}
                 >
                   {isActive ? (

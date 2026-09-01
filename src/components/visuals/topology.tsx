@@ -116,7 +116,7 @@ export function TopologyVisual() {
               width={node.w}
               height={H}
               rx="2"
-              fill={node.focus ? "color-mix(in oklab, var(--color-signal) 12%, var(--color-void))" : "var(--color-void)"}
+              fill={node.focus ? "color-mix(in oklab, var(--color-signal) 12%, var(--color-canvas))" : "var(--color-canvas)"}
               stroke={node.focus ? "var(--color-signal)" : "var(--color-line-bright)"}
               strokeWidth="1"
             />

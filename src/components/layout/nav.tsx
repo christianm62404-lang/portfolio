@@ -7,6 +7,7 @@ import { useActiveSection } from "@/hooks/use-active-section";
 import { MonoLabel, StatusDot } from "@/components/ui/primitives";
 import { ButtonLink } from "@/components/ui/button";
 import { MobileMenu } from "@/components/layout/mobile-menu";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
 
@@ -48,7 +49,7 @@ export function Nav() {
       <div
         aria-hidden
         className={cn(
-          "absolute inset-0 border-b bg-void/80 backdrop-blur-xl transition-opacity duration-400 ease-[var(--ease-out-expo)]",
+          "absolute inset-0 border-b bg-canvas/80 backdrop-blur-xl transition-opacity duration-400 ease-[var(--ease-out-expo)]",
           condensed ? "border-line opacity-100" : "border-transparent opacity-0",
         )}
       />
@@ -129,6 +130,8 @@ export function Nav() {
               </motion.span>
             ) : null}
           </AnimatePresence>
+
+          <ThemeToggle />
 
           <ButtonLink
             href={site.resumePath}

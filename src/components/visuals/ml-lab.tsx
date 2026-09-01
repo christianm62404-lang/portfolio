@@ -151,7 +151,7 @@ function ClassifyPanel() {
       <div>
         <svg
           viewBox={`0 0 ${VIEW} ${VIEW}`}
-          className="h-auto w-full border border-line bg-void"
+          className="h-auto w-full border border-line bg-canvas"
           role="img"
           aria-label={`Scatter plot of two classes with the current decision boundary after ${steps} gradient descent steps. Accuracy ${(metrics.accuracy * 100).toFixed(1)} percent.`}
         >
@@ -318,7 +318,7 @@ function MatrixCell({ value, good = false }: { value: number; good?: boolean }) 
   return (
     <span
       className={cn(
-        "bg-void px-2 py-3 font-mono text-sm tabular-nums transition-colors duration-200",
+        "bg-canvas px-2 py-3 font-mono text-sm tabular-nums transition-colors duration-200",
         good ? "text-ink" : value > 0 ? "text-signal" : "text-ink-faint",
       )}
     >
@@ -357,7 +357,7 @@ function ClusterPanel() {
     <div className="grid gap-6 sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)] sm:items-start">
       <svg
         viewBox={`0 0 ${VIEW} ${VIEW}`}
-        className="h-auto w-full border border-line bg-void"
+        className="h-auto w-full border border-line bg-canvas"
         role="img"
         aria-label={`K-means clustering with three centroids after ${iteration} iterations. Within-cluster sum of squares is ${inertia.toFixed(2)}.`}
       >
@@ -405,7 +405,7 @@ function ClusterPanel() {
               cx={toPx(centroid.x)}
               cy={VIEW - toPx(centroid.y)}
               r={6}
-              fill="var(--color-void)"
+              fill="var(--color-canvas)"
               stroke={CLUSTER_COLORS[index]}
               strokeWidth="1.5"
             />

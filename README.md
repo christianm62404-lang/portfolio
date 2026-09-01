@@ -81,6 +81,32 @@ Three of them compute rather than illustrate:
 - **MSP430 panel** — the potentiometer drives a real duty-cycle calculation and
   the displayed echo time uses the HC-SR04 relationship.
 
+## Themes
+
+Light and dark, following the operating system by default. The toggle in the
+header cycles **system → light → dark**, so a visitor can always get back to
+"whatever my computer does" — a two-state switch cannot.
+
+Both modes are described once. Every colour is a role token defined with
+`light-dark()` in `globals.css`, so there is no second stylesheet to drift:
+
+```css
+--signal: #ff7a2f;                      /* fallback for older browsers */
+--signal: light-dark(#b23c10, #ff7a2f); /* light, dark */
+```
+
+The accent is the same hue in both modes but not the same colour — `#ff7a2f`
+carries 7.7:1 on near-black and only 2.3:1 on paper, so light mode uses a
+deeper burnt orange. Every text colour clears WCAG AA against both the page
+ground and the highest surface, in both modes.
+
+Setting `data-theme` on `<html>` pins `color-scheme`, which is what every
+`light-dark()` token resolves against — one attribute repaints the whole
+palette. An inline script in `<head>` applies a stored choice before first
+paint, so there is no flash. The toggle holds no React state: which icon and
+label show is decided in CSS from that same attribute, so the button renders
+identically on the server and the client.
+
 ## Accessibility and motion
 
 - Semantic landmarks, a skip link, and one consistent focus style.
@@ -88,4 +114,6 @@ Three of them compute rather than illustrate:
 - The mobile menu uses Radix Dialog for focus trapping and scroll locking.
 - Every animation checks `prefers-reduced-motion`, in CSS and in JS. Looping
   animations and the simulated sensor loop stop entirely rather than shortening.
+- Contrast is verified rather than assumed: see the audit in the Themes
+  section above.
 - Off-screen work is paused with `IntersectionObserver`.

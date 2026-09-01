@@ -5,6 +5,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "motion/react";
 import { navItems, site } from "@/content/site";
 import { MonoLabel, StatusDot } from "@/components/ui/primitives";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
 
@@ -50,7 +51,7 @@ export function MobileMenu({ active }: { active: string }) {
           <Dialog.Portal forceMount>
             <Dialog.Overlay asChild forceMount>
               <motion.div
-                className="fixed inset-0 z-50 bg-void/85 backdrop-blur-sm md:hidden"
+                className="fixed inset-0 z-50 bg-canvas/85 backdrop-blur-sm md:hidden"
                 initial={reduceMotion ? false : { opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={reduceMotion ? undefined : { opacity: 0 }}
@@ -124,9 +125,12 @@ export function MobileMenu({ active }: { active: string }) {
                   >
                     Resume
                   </a>
-                  <div className="flex items-center gap-2">
-                    <StatusDot />
-                    <MonoLabel>Open to internships</MonoLabel>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="flex items-center gap-2">
+                      <StatusDot />
+                      <MonoLabel>Open to internships</MonoLabel>
+                    </span>
+                    <ThemeToggle />
                   </div>
                 </div>
               </motion.div>

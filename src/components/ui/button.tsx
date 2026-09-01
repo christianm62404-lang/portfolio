@@ -8,11 +8,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-ink text-void hover:bg-white active:translate-y-px border border-transparent",
+          "bg-ink text-canvas hover:bg-ink-strong active:translate-y-px border border-transparent",
         outline:
           "border border-line-bright text-ink hover:border-signal hover:text-signal bg-transparent",
         ghost: "text-ink-dim hover:text-ink border border-transparent hover:border-line-bright",
-        signal: "bg-signal text-void hover:bg-signal-soft border border-transparent",
+        signal: "bg-signal text-canvas hover:bg-signal-soft border border-transparent",
       },
       size: {
         sm: "h-9 px-3.5 text-[0.8125rem] rounded-sm",

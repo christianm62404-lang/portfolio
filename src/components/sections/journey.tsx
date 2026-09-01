@@ -62,7 +62,7 @@ export function Journey() {
               {/* Node */}
               <span
                 aria-hidden
-                className="absolute top-1.5 left-0 z-10 grid size-[15px] place-items-center rounded-full border border-line-bright bg-void md:left-1/2 md:-translate-x-1/2"
+                className="absolute top-1.5 left-0 z-10 grid size-[15px] place-items-center rounded-full border border-line-bright bg-canvas md:left-1/2 md:-translate-x-1/2"
               >
                 <motion.span
                   className="size-[5px] rounded-full bg-signal"
