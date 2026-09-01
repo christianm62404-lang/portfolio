@@ -8,7 +8,7 @@ export function Work() {
       <SectionHeading
         index="02"
         eyebrow="Selected work"
-        title="Five things I built, and what each one cost me"
+        title="Things I built, and what each one cost me"
         lede="Professional work, coursework, and one project that is entirely mine. They do not look alike because they were not alike — a service topology and a microcontroller are different problems, and the page should say so."
         meta={[
           { label: "Entries", value: String(projects.length).padStart(2, "0") },

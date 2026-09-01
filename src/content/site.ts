@@ -18,8 +18,12 @@ export const site = {
   email: "christianm62404@gmail.com",
   phone: "(321) 201-2313",
   resumePath: "/resume.pdf",
-  /** Drop a headshot at public/portrait.jpg to replace the monogram fallback. */
-  portraitPath: "/portrait.jpg",
+  /**
+   * Headshot basename, without an extension. Save the photo into public/ as
+   * portrait.jpg (or .png / .webp / .avif) and it appears on the next build.
+   * Until then the About section renders a monogram plate instead.
+   */
+  portraitName: "portrait",
   socials: [
     { label: "GitHub", handle: "christianm62404-lang", href: "https://github.com/christianm62404-lang" },
     {

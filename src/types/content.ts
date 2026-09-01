@@ -22,12 +22,7 @@ export interface Layer {
 }
 
 /** Determines which visual treatment a project renders with. */
-export type ProjectVisual =
-  | "topology"
-  | "appshell"
-  | "schedule"
-  | "board"
-  | "site";
+export type ProjectVisual = "topology" | "appshell" | "schedule" | "board";
 
 export interface ProjectLink {
   label: string;

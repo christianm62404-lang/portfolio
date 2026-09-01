@@ -13,11 +13,11 @@ import { cn } from "@/lib/utils";
  * is never in an unfinished-looking state.
  */
 export function Portrait({
-  available,
+  src,
   className,
 }: {
-  /** Resolved on the server so a missing file never causes a failed request. */
-  available: boolean;
+  /** Resolved on the server, so a missing file never causes a failed request. */
+  src: string | null;
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
@@ -29,7 +29,7 @@ export function Portrait({
         className,
       )}
     >
-      {failed || !available ? (
+      {failed || !src ? (
         <div className="grid-field absolute inset-0 grid place-items-center">
           <span className="font-display text-[clamp(3rem,9vw,5rem)] font-semibold tracking-tight text-line-bright">
             {site.initials}
@@ -37,7 +37,7 @@ export function Portrait({
         </div>
       ) : (
         <Image
-          src={site.portraitPath}
+          src={src}
           alt={`Portrait of ${site.name}`}
           fill
           sizes="(min-width: 1024px) 22rem, (min-width: 640px) 40vw, 70vw"

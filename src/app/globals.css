@@ -13,9 +13,9 @@
    lighter; in light that is whiter.
 
    The accent is the same hue in both modes but not the same colour.
-   A #ff7a2f that carries 7.6:1 on near-black manages only 2.3:1 on
-   paper, so light mode uses a deeper burnt orange that reads as the
-   same brand mark and clears 5:1 on the light ground.
+   A violet light enough to carry 7.4:1 on near-black manages barely
+   2:1 on paper, so light mode drops to a deep violet of the same hue
+   that clears 6.3:1 on the light ground. Same brand mark, two weights.
 
    Each token declares a plain dark value first. A browser without
    `light-dark()` drops the second declaration and gets the original
@@ -54,11 +54,11 @@
   --ink-faint: #82828d;
   --ink-faint: light-dark(#6a6a73, #82828d);
 
-  --signal: #ff7a2f;
-  --signal: light-dark(#b23c10, #ff7a2f);
+  --signal: #a78bff;
+  --signal: light-dark(#6b2fd6, #a78bff);
 
-  --signal-soft: #ff9a5e;
-  --signal-soft: light-dark(#c94e1e, #ff9a5e);
+  --signal-soft: #c2abff;
+  --signal-soft: light-dark(#5a23bb, #c2abff);
 
   --live: #4ade80;
   --live: light-dark(#15803d, #4ade80);

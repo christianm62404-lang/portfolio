@@ -3,7 +3,6 @@ import { TopologyVisual } from "@/components/visuals/topology";
 import { AppShellVisual } from "@/components/visuals/app-shell";
 import { BoardVisual } from "@/components/visuals/board";
 import { ScheduleVisual } from "@/components/visuals/schedule";
-import { SiteFrameVisual } from "@/components/visuals/site-frame";
 
 /**
  * Maps a project to its visual treatment.
@@ -23,8 +22,6 @@ export function ProjectVisualSwitch({ project }: { project: Project }) {
       return <BoardVisual />;
     case "schedule":
       return <ScheduleVisual />;
-    case "site":
-      return <SiteFrameVisual url={project.links?.[0]?.href ?? "https://example.com"} />;
     default:
       return null;
   }

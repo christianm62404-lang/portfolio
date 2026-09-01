@@ -13,21 +13,34 @@ const facts = [
   { label: "Currently", value: "Developer intern at Intrastack Solutions" },
 ];
 
+/** Formats accepted for the headshot, in the order they are preferred. */
+const PORTRAIT_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "avif"] as const;
+
 /**
- * The headshot is supplied by the site owner, so its presence is checked at
- * build time rather than discovered by the browser as a failed request.
- * Drop a file at public/portrait.jpg and it appears on the next build.
+ * Finds the headshot, if it has been added.
+ *
+ * The photo is supplied by the site owner rather than committed by the build,
+ * so its presence is resolved on the server instead of being discovered by the
+ * browser as a failed request. Any of the usual formats works — whichever the
+ * photo happens to be saved as is the one that gets used.
+ *
+ * Returns the public path, or null to render the monogram plate instead.
  */
-function portraitAvailable() {
-  try {
-    return fs.existsSync(path.join(process.cwd(), "public", site.portraitPath));
-  } catch {
-    return false;
+function findPortrait(): string | null {
+  for (const extension of PORTRAIT_EXTENSIONS) {
+    const file = `${site.portraitName}.${extension}`;
+    try {
+      if (fs.existsSync(path.join(process.cwd(), "public", file))) return `/${file}`;
+    } catch {
+      // An unreadable public directory is not worth failing the build over.
+      return null;
+    }
   }
+  return null;
 }
 
 export function About() {
-  const hasPortrait = portraitAvailable();
+  const portrait = findPortrait();
 
   return (
     <Section id="about" className="border-t border-line">
@@ -71,7 +84,7 @@ export function About() {
         </Reveal>
 
         <Reveal delay={0.1} className="space-y-8">
-          <Portrait available={hasPortrait} />
+          <Portrait src={portrait} />
 
           <dl className="divide-y divide-line border-y border-line">
             {facts.map((fact) => (

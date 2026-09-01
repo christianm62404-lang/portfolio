@@ -9,13 +9,13 @@ npm run build    # production build
 npm run lint
 ```
 
-## Before you deploy — three things to add
+## Before you deploy
 
-| What | Where | Notes |
+| What | Where | Status |
 | --- | --- | --- |
-| Résumé PDF | `public/resume.pdf` | The Resume buttons link here. The file is intentionally **not** in the repo — add your real one. |
-| Headshot | `public/portrait.jpg` | Optional. Its presence is checked at build time; without it the About section renders a monogram plate instead, with no failed request. |
-| Real domain | `site.url` in `src/content/site.ts` | Used for canonical URLs, the sitemap, and Open Graph tags. |
+| Résumé PDF | `public/resume.pdf` | **Done.** Replace the file to update it; the path never changes. |
+| Headshot | `public/portrait.jpg` | **To add.** Any of `.jpg`, `.jpeg`, `.png`, `.webp`, `.avif` — the build looks for each in turn. Without it the About section renders a monogram plate and makes no failed request. |
+| Real domain | `site.url` in `src/content/site.ts` | **To set.** Used for canonical URLs, the sitemap, and Open Graph tags. |
 
 ## How the content is organised
 

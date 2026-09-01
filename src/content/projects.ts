@@ -110,34 +110,20 @@ export const projects: Project[] = [
     index: "04",
     name: "TimeTrack",
     kicker: "Workforce management & time tracking",
-    context: "Personal project",
+    context: "Personal project — deployed at markstevens.tech",
     role: "Sole developer — end to end",
     period: "Personal project",
     summary:
-      "A full-stack application for scheduling, time tracking, task management, and productivity reporting. I designed the schema, wrote the backend, and built the interface.",
+      "A full-stack application for scheduling, time tracking, task management, and productivity reporting. I designed the schema, wrote the backend, built the interface, and shipped it to a live domain.",
     layers: ["software", "systems"],
     stack: ["React", "TypeScript", "PostgreSQL", "REST APIs", "Git"],
     challenge:
       "Planned time and actual time are not the same thing, and most trackers conflate them. I modelled scheduled blocks and logged entries as separate entities from the start.",
     outcome:
-      "Planned-versus-actual reporting falls out of the schema instead of being a special case bolted on later.",
+      "Planned-versus-actual reporting falls out of the schema instead of being a special case bolted on later — and the whole thing is deployed and reachable rather than sitting in a repository.",
     learned:
       "Getting the data model right early is worth more than any amount of clever code written afterwards.",
     visual: "schedule",
-  },
-  {
-    slug: "markstevens",
-    index: "05",
-    name: "markstevens.tech",
-    kicker: "Production website",
-    context: "Client / collaborative work",
-    role: "Contributor",
-    period: "—",
-    summary: "A live production site I contributed to. Deployed and publicly available.",
-    layers: ["software"],
-    stack: ["Web"],
-    visual: "site",
-    links: [{ label: "Visit site", href: "https://markstevens.tech" }],
-    note: "Write-up to be expanded — see src/content/projects.ts.",
+    links: [{ label: "Visit markstevens.tech", href: "https://markstevens.tech" }],
   },
 ];

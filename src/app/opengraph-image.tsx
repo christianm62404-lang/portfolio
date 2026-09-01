@@ -46,7 +46,7 @@ export default function OpengraphImage() {
           <div style={{ display: "flex", color: "#f2f2f4", fontSize: 92, lineHeight: 1.05 }}>
             I build across
           </div>
-          <div style={{ display: "flex", color: "#ff7a2f", fontSize: 92, lineHeight: 1.05 }}>
+          <div style={{ display: "flex", color: "#a78bff", fontSize: 92, lineHeight: 1.05 }}>
             the stack.
           </div>
         </div>
@@ -54,7 +54,7 @@ export default function OpengraphImage() {
         <div style={{ display: "flex", alignItems: "center", gap: 14, color: "#7c7c87", fontSize: 22 }}>
           {["Hardware", "Embedded", "Software", "ML", "Systems"].map((layer, index) => (
             <div key={layer} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-              {index > 0 ? <div style={{ display: "flex", color: "#ff7a2f" }}>→</div> : null}
+              {index > 0 ? <div style={{ display: "flex", color: "#a78bff" }}>→</div> : null}
               <div style={{ display: "flex" }}>{layer}</div>
             </div>
           ))}
