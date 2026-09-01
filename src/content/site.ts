@@ -19,11 +19,12 @@ export const site = {
   phone: "(321) 201-2313",
   resumePath: "/resume.pdf",
   /**
-   * Headshot basename, without an extension. Save the photo into public/ as
-   * portrait.jpg (or .png / .webp / .avif) and it appears on the next build.
-   * Until then the About section renders a monogram plate instead.
+   * Headshot basename, without an extension, resolved against public/.
+   * findPortrait() tries .jpg, .jpeg, .png, .webp, and .avif in that order, so
+   * replacing the photo only means matching this name. Until a matching file
+   * exists the hero renders a monogram plate instead.
    */
-  portraitName: "portrait",
+  portraitName: "headshot_full",
   socials: [
     { label: "GitHub", handle: "christianm62404-lang", href: "https://github.com/christianm62404-lang" },
     {

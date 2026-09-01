@@ -17,6 +17,12 @@ export function nextTheme(current: ThemePreference): ThemePreference {
   return THEME_CYCLE[(index + 1) % THEME_CYCLE.length];
 }
 
+const WIPE_ATTRIBUTE = "data-theme-wipe";
+
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (callback: () => void) => { finished: Promise<void> };
+};
+
 /**
  * Applies a preference to the document.
  *
@@ -24,15 +30,41 @@ export function nextTheme(current: ThemePreference): ThemePreference {
  * `light-dark()` token resolves against — so this one attribute repaints the
  * entire palette. Removing it hands the decision back to the OS.
  *
- * The cross-fade needs nothing here. The palette tokens are registered as
- * typed colours in globals.css and carry their own transition, so changing
- * this attribute interpolates them rather than swapping them — including when
- * the change comes from the operating system rather than the toggle.
+ * How that repaint is animated depends on what the browser can do:
+ *
+ * - With the View Transitions API, the new palette is wiped in diagonally
+ *   from the top-right corner. The animation itself lives in globals.css; all
+ *   that is needed here is to run the change inside a transition and to
+ *   suppress the token fade while it does, so the region being revealed is not
+ *   also cross-fading and blurring the edge away.
+ * - Without it, the registered colour tokens carry their own transition and
+ *   cross-fade the palette uniformly instead.
+ * - Under reduced motion, neither runs and the switch is immediate.
  */
 export function applyTheme(preference: ThemePreference) {
   const root = document.documentElement;
-  if (preference) root.dataset.theme = preference;
-  else delete root.dataset.theme;
+
+  const commit = () => {
+    if (preference) root.dataset.theme = preference;
+    else delete root.dataset.theme;
+  };
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const startViewTransition = (document as ViewTransitionDocument).startViewTransition;
+
+  if (reduceMotion || typeof startViewTransition !== "function") {
+    commit();
+    return;
+  }
+
+  root.setAttribute(WIPE_ATTRIBUTE, "");
+  // A transition can be skipped — by a second click, or by the tab being
+  // hidden. `finished` settles either way, and the theme is already applied,
+  // so clearing the attribute is all the cleanup there is.
+  startViewTransition
+    .call(document, commit)
+    .finished.catch(() => {})
+    .finally(() => root.removeAttribute(WIPE_ATTRIBUTE));
 }
 
 /**

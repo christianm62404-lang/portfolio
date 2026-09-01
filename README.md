@@ -14,7 +14,7 @@ npm run lint
 | What | Where | Status |
 | --- | --- | --- |
 | Résumé PDF | `public/resume.pdf` | **Done.** Replace the file to update it; the path never changes. |
-| Headshot | `public/portrait.jpg` | **To add.** It is the hero image. Any of `.jpg`, `.jpeg`, `.png`, `.webp`, `.avif` — the build looks for each in turn. Without it the hero renders a monogram plate and makes no failed request. A square crop fits the frame. |
+| Headshot | `public/headshot_full.png` | **Done.** The name comes from `site.portraitName`; the build tries `.jpg`, `.jpeg`, `.png`, `.webp`, `.avif` in turn. Without a match the hero renders a monogram plate and makes no failed request. |
 | Real domain | `site.url` in `src/content/site.ts` | **To set.** Used for canonical URLs, the sitemap, and Open Graph tags. |
 
 ## How the content is organised
@@ -107,14 +107,24 @@ paint, so there is no flash. The toggle holds no React state: which icon and
 label show is decided in CSS from that same attribute, so the button renders
 identically on the server and the client.
 
-Switching cross-fades over 600 ms. Each token is registered with `@property`
+Switching wipes the new theme in diagonally from the top-right corner. That
+is a View Transition: the animation is entirely in `globals.css`, so the
+JavaScript only has to run the change inside `startViewTransition`.
+
+The revealed region is the half-plane right of a 45° line, written as a quad
+whose right edge sits far outside the viewport — four points at both ends is
+what lets a `clip-path` interpolate. The outgoing snapshot is held visible by
+an explicit keyframe rather than switched off with `animation: none`; with no
+animation on it Chromium stops painting it, and the wipe reveals bare canvas
+instead of the old theme.
+
+Where View Transitions are unavailable, the palette cross-fades uniformly over
+600 ms instead. That works because each token is registered with `@property`
 as a typed `<color>`, which is what makes a custom property interpolable
-rather than swap, so a single `transition` on `:root` carries the whole
-palette — SVG fills and `color-mix()` results included. The alternative,
-transitioning `background-color` and friends on every element, costs a
-transition per node and needs an attribute added and removed around each
-switch; this costs one. An operating-system theme change fades too, and
-`prefers-reduced-motion` cuts straight to the new palette.
+rather than swappable, so one `transition` on `:root` carries the whole
+palette — SVG fills and `color-mix()` results included. An operating-system
+theme change fades that way too. Under `prefers-reduced-motion` neither runs
+and the switch is immediate.
 
 ## Accessibility and motion
 

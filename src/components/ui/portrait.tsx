@@ -48,7 +48,11 @@ export function Portrait({
           alt={`Portrait of ${site.name}`}
           fill
           sizes="(min-width: 1024px) 26rem, (min-width: 640px) 18rem, 62vw"
-          className="object-cover object-center grayscale-[0.15] transition-[filter,transform] duration-700 ease-[var(--ease-out-expo)] hover:scale-[1.02] hover:grayscale-0"
+          // Rendered ~10% taller than the frame and anchored to the top, so
+          // the soft band along the bottom edge of the source photo is cropped
+          // out. Overriding the height that `fill` sets inline needs the
+          // important modifier.
+          className="h-[110%]! object-cover object-top grayscale-[0.15] transition-[filter,transform] duration-700 ease-[var(--ease-out-expo)] hover:scale-[1.02] hover:grayscale-0"
           onError={() => setFailed(true)}
           priority={priority}
         />
