@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Design tokens — a single dark, high-contrast instrument panel.
+   One accent (signal orange). Hue is never used to decorate;
+   it marks state, focus, and the active path through the system.
+   ============================================================ */
+@theme {
+  --color-void: #08080a;
+  --color-panel: #0e0e11;
+  --color-panel-2: #131318;
+  --color-line: #1e1e24;
+  --color-line-bright: #2f2f38;
+  --color-ink: #f2f2f4;
+  --color-ink-dim: #a3a3ad;
+  --color-ink-faint: #7c7c87;
+  --color-signal: #ff7a2f;
+  --color-signal-soft: #ff9a5e;
+  --color-live: #4ade80;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-tech), ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 42s linear infinite;
+  --animate-pulse-dot: pulse-dot 2.4s ease-in-out infinite;
+  --animate-trace: trace 2.6s linear infinite;
+  --animate-sweep: sweep 3.4s var(--ease-out-expo) infinite;
+  --animate-scroll-hint: scroll-hint 2.2s var(--ease-out-expo) infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.82); }
+}
+@keyframes trace {
+  from { stroke-dashoffset: 240; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes scroll-hint {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(250%); }
+}
+@keyframes sweep {
+  0% { transform: translateX(-110%); }
+  60%, 100% { transform: translateX(210%); }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Sticky header height + breathing room for anchor jumps. */
+    scroll-padding-top: 6.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-void);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-signal) 30%, transparent);
+    color: var(--color-ink);
+  }
+
+  /* One focus treatment for the whole site, visible on every surface. */
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  svg text {
+    font-family: var(--font-mono);
+  }
+}
+
+@layer utilities {
+  /* Small uppercase monospace annotations used as engineering labels. */
+  .label-mono {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+
+  .rule {
+    border: 0;
+    border-top: 1px solid var(--color-line);
+  }
+
+  /* Faint engineering graph paper. Sits behind content, never competes. */
+  .grid-field {
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--color-line) 62%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--color-line) 62%, transparent) 1px, transparent 1px);
+    background-size: 72px 72px;
+  }
+
+  .mask-fade-y {
+    mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  }
+  .mask-fade-x {
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  }
+
+  .text-gradient-ink {
+    background: linear-gradient(180deg, var(--color-ink) 30%, color-mix(in oklab, var(--color-ink) 55%, var(--color-void)) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .shadow-lift {
+    box-shadow:
+      0 1px 0 0 color-mix(in oklab, white 5%, transparent) inset,
+      0 24px 60px -28px rgb(0 0 0 / 0.9);
+  }
+}
+
+/* Motion is a layer of the design, not the design itself.
+   When it is unwelcome, remove it entirely rather than shortening it. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Firefox/WebKit scrollbar, tuned to the panel palette. */
+@supports selector(::-webkit-scrollbar) {
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--color-void); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line-bright);
+    border: 2px solid var(--color-void);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-ink-faint); }
+}
