@@ -1,9 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
 import { site } from "@/content/site";
 import { education } from "@/content/experience";
 import { MonoLabel, Section, SectionHeading } from "@/components/ui/primitives";
-import { Portrait } from "@/components/ui/portrait";
+import { StackDiagram } from "@/components/visuals/stack-diagram";
 import { Reveal } from "@/components/ui/reveal";
 
 const facts = [
@@ -13,35 +11,7 @@ const facts = [
   { label: "Currently", value: "Developer intern at Intrastack Solutions" },
 ];
 
-/** Formats accepted for the headshot, in the order they are preferred. */
-const PORTRAIT_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "avif"] as const;
-
-/**
- * Finds the headshot, if it has been added.
- *
- * The photo is supplied by the site owner rather than committed by the build,
- * so its presence is resolved on the server instead of being discovered by the
- * browser as a failed request. Any of the usual formats works — whichever the
- * photo happens to be saved as is the one that gets used.
- *
- * Returns the public path, or null to render the monogram plate instead.
- */
-function findPortrait(): string | null {
-  for (const extension of PORTRAIT_EXTENSIONS) {
-    const file = `${site.portraitName}.${extension}`;
-    try {
-      if (fs.existsSync(path.join(process.cwd(), "public", file))) return `/${file}`;
-    } catch {
-      // An unreadable public directory is not worth failing the build over.
-      return null;
-    }
-  }
-  return null;
-}
-
 export function About() {
-  const portrait = findPortrait();
-
   return (
     <Section id="about" className="border-t border-line">
       <SectionHeading
@@ -83,8 +53,10 @@ export function About() {
           </p>
         </Reveal>
 
-        <Reveal delay={0.1} className="space-y-8">
-          <Portrait src={portrait} />
+        <Reveal delay={0.1} className="space-y-10">
+          <div className="border border-line bg-panel p-5 sm:p-6">
+            <StackDiagram />
+          </div>
 
           <dl className="divide-y divide-line border-y border-line">
             {facts.map((fact) => (

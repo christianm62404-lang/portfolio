@@ -21,8 +21,96 @@
    `light-dark()` drops the second declaration and gets the original
    dark design intact, rather than an undefined variable.
    ============================================================ */
+/* Registering the palette as typed colours makes it animatable.
+
+   An unregistered custom property cannot be interpolated — it swaps. Declaring
+   these with a <color> syntax means the browser can transition them, so the
+   single rule on :root below cross-fades the entire theme: everything that
+   reads one of these tokens, SVG fills and color-mix() results included,
+   follows for free.
+
+   The alternative — transitioning background-color and friends on every
+   element — costs a transition per node and needs an attribute added and
+   removed around each switch. This costs one. */
+@property --canvas {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #08080a;
+}
+@property --panel {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #0e0e11;
+}
+@property --panel-2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #131318;
+}
+@property --line {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #1e1e24;
+}
+@property --line-bright {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #2f2f38;
+}
+@property --ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f2f2f4;
+}
+@property --ink-strong {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+@property --ink-dim {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #a3a3ad;
+}
+@property --ink-faint {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #82828d;
+}
+@property --signal {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #a78bff;
+}
+@property --signal-soft {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #c2abff;
+}
+@property --live {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #4ade80;
+}
+
 :root {
   color-scheme: light dark;
+
+  /* Slow enough to read as a deliberate change of state. */
+  --theme-fade: 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    --canvas var(--theme-fade),
+    --panel var(--theme-fade),
+    --panel-2 var(--theme-fade),
+    --line var(--theme-fade),
+    --line-bright var(--theme-fade),
+    --ink var(--theme-fade),
+    --ink-strong var(--theme-fade),
+    --ink-dim var(--theme-fade),
+    --ink-faint var(--theme-fade),
+    --signal var(--theme-fade),
+    --signal-soft var(--theme-fade),
+    --live var(--theme-fade);
 
   --canvas: #08080a;
   --canvas: light-dark(#f4f4f1, #08080a);
@@ -218,11 +306,14 @@
     mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
   }
 
+  /* A gentle sheen down large display type. The fade starts late and stops
+     well short of the background, so descenders stay fully legible — at hero
+     sizes a steeper ramp swallows the tail of a "g". */
   .text-gradient-ink {
     background: linear-gradient(
       180deg,
-      var(--color-ink) 30%,
-      color-mix(in oklab, var(--color-ink) 58%, var(--color-canvas)) 100%
+      var(--color-ink) 55%,
+      color-mix(in oklab, var(--color-ink) 74%, var(--color-canvas)) 100%
     );
     -webkit-background-clip: text;
     background-clip: text;

@@ -15,23 +15,30 @@ import { cn } from "@/lib/utils";
 export function Portrait({
   src,
   className,
+  priority = false,
 }: {
   /** Resolved on the server, so a missing file never causes a failed request. */
   src: string | null;
   className?: string;
+  /** Set for the hero portrait, which is the largest-contentful paint. */
+  priority?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
 
   return (
     <div
       className={cn(
-        "relative aspect-4/5 overflow-hidden border border-line bg-panel-2",
+        // Square rather than 4:5: a head-and-shoulders crop sits well in it,
+        // and a circular headshot is not clipped at the sides.
+        "relative aspect-square overflow-hidden border border-line bg-panel-2",
         className,
       )}
     >
       {failed || !src ? (
+        // Reads as a monogram plate rather than a failed image: this is the
+        // hero, so it has to look chosen while the photo is pending.
         <div className="grid-field absolute inset-0 grid place-items-center">
-          <span className="font-display text-[clamp(3rem,9vw,5rem)] font-semibold tracking-tight text-line-bright">
+          <span className="font-display text-[clamp(3.5rem,11vw,6rem)] font-semibold tracking-tight text-ink-faint/75">
             {site.initials}
           </span>
         </div>
@@ -40,10 +47,10 @@ export function Portrait({
           src={src}
           alt={`Portrait of ${site.name}`}
           fill
-          sizes="(min-width: 1024px) 22rem, (min-width: 640px) 40vw, 70vw"
+          sizes="(min-width: 1024px) 26rem, (min-width: 640px) 18rem, 62vw"
           className="object-cover object-center grayscale-[0.15] transition-[filter,transform] duration-700 ease-[var(--ease-out-expo)] hover:scale-[1.02] hover:grayscale-0"
           onError={() => setFailed(true)}
-          priority={false}
+          priority={priority}
         />
       )}
 

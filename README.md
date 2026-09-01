@@ -14,7 +14,7 @@ npm run lint
 | What | Where | Status |
 | --- | --- | --- |
 | Résumé PDF | `public/resume.pdf` | **Done.** Replace the file to update it; the path never changes. |
-| Headshot | `public/portrait.jpg` | **To add.** Any of `.jpg`, `.jpeg`, `.png`, `.webp`, `.avif` — the build looks for each in turn. Without it the About section renders a monogram plate and makes no failed request. |
+| Headshot | `public/portrait.jpg` | **To add.** It is the hero image. Any of `.jpg`, `.jpeg`, `.png`, `.webp`, `.avif` — the build looks for each in turn. Without it the hero renders a monogram plate and makes no failed request. A square crop fits the frame. |
 | Real domain | `site.url` in `src/content/site.ts` | **To set.** Used for canonical URLs, the sitemap, and Open Graph tags. |
 
 ## How the content is organised
@@ -106,6 +106,15 @@ palette. An inline script in `<head>` applies a stored choice before first
 paint, so there is no flash. The toggle holds no React state: which icon and
 label show is decided in CSS from that same attribute, so the button renders
 identically on the server and the client.
+
+Switching cross-fades over 600 ms. Each token is registered with `@property`
+as a typed `<color>`, which is what makes a custom property interpolable
+rather than swap, so a single `transition` on `:root` carries the whole
+palette — SVG fills and `color-mix()` results included. The alternative,
+transitioning `background-color` and friends on every element, costs a
+transition per node and needs an attribute added and removed around each
+switch; this costs one. An operating-system theme change fades too, and
+`prefers-reduced-motion` cuts straight to the new palette.
 
 ## Accessibility and motion
 

@@ -5,20 +5,20 @@ import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { site } from "@/content/site";
 import { ButtonLink } from "@/components/ui/button";
 import { MonoLabel, StatusDot } from "@/components/ui/primitives";
-import { StackDiagram } from "@/components/visuals/stack-diagram";
+import { Portrait } from "@/components/ui/portrait";
 import { usePointerFine } from "@/hooks/use-media-query";
-import { cn } from "@/lib/utils";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
+import { cn } from "@/lib/utils";
 
 /**
- * The first screen.
+ * The first screen: a face, a name, and one line about what the name does.
  *
  * The cursor drives two motion values that feed a parallax field and a soft
  * spotlight. They are motion values rather than React state on purpose — the
  * pointer can fire dozens of events per second and none of them should cause
  * a re-render of the section.
  */
-export function Hero() {
+export function Hero({ portraitSrc }: { portraitSrc: string | null }) {
   const containerRef = useRef<HTMLElement>(null);
   const reduceMotion = useMotionPreference();
   const canHover = usePointerFine();
@@ -35,7 +35,9 @@ export function Hero() {
   const gridY = useTransform(smoothY, [0, 1], [10, -10]);
   const glowX = useTransform(smoothX, [0, 1], ["30%", "70%"]);
   const glowY = useTransform(smoothY, [0, 1], ["25%", "75%"]);
-  const titleShift = useTransform(smoothX, [0, 1], [4, -4]);
+  // The portrait leans very slightly toward the cursor, like a card on a desk.
+  const portraitTiltY = useTransform(smoothX, [0, 1], [4, -4]);
+  const portraitTiltX = useTransform(smoothY, [0, 1], [-3, 3]);
 
   useEffect(() => {
     const element = containerRef.current;
@@ -82,10 +84,7 @@ export function Hero() {
       />
       <div
         aria-hidden
-        className={cn(
-          "pointer-events-none absolute inset-0",
-          !interactive && "signal-wash",
-        )}
+        className={cn("pointer-events-none absolute inset-0", !interactive && "signal-wash")}
       >
         {interactive ? (
           <motion.div
@@ -99,12 +98,28 @@ export function Hero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-canvas to-transparent"
       />
 
-      <div className="relative mx-auto grid w-full max-w-[1240px] items-center gap-14 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-20">
-        <div>
+      <div className="relative mx-auto grid w-full max-w-[1240px] items-center gap-10 sm:gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-20">
+        {/* Portrait first in the DOM so the face leads on a phone, moved to
+            the second column on wide screens where reading order is lateral. */}
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="w-[min(15rem,62%)] sm:w-[min(18rem,52%)] lg:order-2 lg:w-full lg:max-w-[26rem] lg:justify-self-end"
+          style={
+            interactive
+              ? { rotateY: portraitTiltY, rotateX: portraitTiltX, transformPerspective: 1200 }
+              : undefined
+          }
+        >
+          <Portrait src={portraitSrc} priority />
+        </motion.div>
+
+        <div className="lg:order-1">
           <motion.div
             initial={reduceMotion ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-wrap items-center gap-x-5 gap-y-2"
           >
             <span className="flex items-center gap-2">
@@ -118,36 +133,40 @@ export function Hero() {
           <motion.h1
             initial={reduceMotion ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
-            style={interactive ? { x: titleShift } : undefined}
-            className="mt-7 text-[clamp(2.9rem,9vw,6.25rem)] leading-[0.92] font-semibold tracking-[-0.045em]"
+            transition={{ duration: 0.85, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
+            className="text-gradient-ink mt-6 text-[clamp(2.6rem,7.2vw,5rem)] leading-[0.95] font-semibold tracking-[-0.045em]"
           >
-            <span className="block text-gradient-ink">I build</span>
-            <span className="block text-gradient-ink">across the</span>
-            <span className="relative inline-block text-signal">
-              stack.
-              <span
-                aria-hidden
-                className="absolute -bottom-1 left-0 h-px w-full bg-signal/40"
-              />
-            </span>
+            {site.name}
           </motion.h1>
 
           <motion.p
             initial={reduceMotion ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-8 max-w-lg text-base leading-relaxed text-ink-dim sm:text-lg"
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-5 text-[clamp(1.25rem,2.6vw,1.85rem)] leading-tight font-medium tracking-[-0.03em]"
           >
-            {site.name} — a computer engineering student who works from transistors up
-            to cloud services, and finds the same question interesting at every level.
+            I build across the{" "}
+            <span className="relative inline-block text-signal">
+              stack.
+              <span aria-hidden className="absolute -bottom-1 left-0 h-px w-full bg-signal/40" />
+            </span>
+          </motion.p>
+
+          <motion.p
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.26, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-6 max-w-lg text-base leading-relaxed text-ink-dim sm:text-lg"
+          >
+            A computer engineering student who works from transistors up to cloud
+            services, and finds the same question interesting at every level.
           </motion.p>
 
           <motion.div
             initial={reduceMotion ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-10 flex flex-wrap items-center gap-3"
+            transition={{ duration: 0.8, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-9 flex flex-wrap items-center gap-3"
           >
             <ButtonLink href="#work" variant="primary" size="lg">
               See the work
@@ -163,15 +182,6 @@ export function Hero() {
             </ButtonLink>
           </motion.div>
         </div>
-
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="border border-line bg-panel/70 p-5 backdrop-blur-sm sm:p-7"
-        >
-          <StackDiagram />
-        </motion.div>
       </div>
 
       <ScrollCue />

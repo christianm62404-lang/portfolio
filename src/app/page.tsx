@@ -1,3 +1,4 @@
+import { findPortrait } from "@/lib/portrait";
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
 import { Work } from "@/components/sections/work";
@@ -16,9 +17,13 @@ import { Contact } from "@/components/sections/contact";
  * ship JavaScript.
  */
 export default function Home() {
+  // Resolved here rather than inside the hero, which is a client component and
+  // cannot read the filesystem.
+  const portraitSrc = findPortrait();
+
   return (
     <>
-      <Hero />
+      <Hero portraitSrc={portraitSrc} />
       <About />
       <Work />
       <Labs />

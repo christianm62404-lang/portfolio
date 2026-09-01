@@ -23,6 +23,11 @@ export function nextTheme(current: ThemePreference): ThemePreference {
  * Setting `data-theme` pins `color-scheme` in CSS, which is what every
  * `light-dark()` token resolves against — so this one attribute repaints the
  * entire palette. Removing it hands the decision back to the OS.
+ *
+ * The cross-fade needs nothing here. The palette tokens are registered as
+ * typed colours in globals.css and carry their own transition, so changing
+ * this attribute interpolates them rather than swapping them — including when
+ * the change comes from the operating system rather than the toggle.
  */
 export function applyTheme(preference: ThemePreference) {
   const root = document.documentElement;
