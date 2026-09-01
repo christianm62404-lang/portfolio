@@ -53,13 +53,13 @@ export const metadata: Metadata = {
     type: "website",
     url: site.url,
     siteName: site.name,
-    title: `${site.name} — I build across the stack`,
+    title: `${site.name} — Computer Engineering, UCF`,
     description: site.description,
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name} — I build across the stack`,
+    title: `${site.name} — Computer Engineering, UCF`,
     description: site.description,
   },
   robots: {

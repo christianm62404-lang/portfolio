@@ -12,7 +12,6 @@ export const site = {
    * the sitemap, and Open Graph tags.
    */
   url: "https://christianartigas.dev",
-  tagline: "I build across the stack — from circuits to cloud services.",
   description:
     "Christian Artigas is a Computer Engineering student at UCF working across embedded systems, electronics, full-stack software, and machine learning.",
   email: "christianm62404@gmail.com",

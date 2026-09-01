@@ -143,20 +143,7 @@ export function Hero({ portraitSrc }: { portraitSrc: string | null }) {
             initial={reduceMotion ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-5 text-[clamp(1.25rem,2.6vw,1.85rem)] leading-tight font-medium tracking-[-0.03em]"
-          >
-            I build across the{" "}
-            <span className="relative inline-block text-signal">
-              stack.
-              <span aria-hidden className="absolute -bottom-1 left-0 h-px w-full bg-signal/40" />
-            </span>
-          </motion.p>
-
-          <motion.p
-            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.26, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 max-w-lg text-base leading-relaxed text-ink-dim sm:text-lg"
+            className="mt-6 max-w-lg text-lg leading-relaxed text-ink-dim sm:text-xl"
           >
             A computer engineering student who works from transistors up to cloud
             services, and finds the same question interesting at every level.
@@ -165,7 +152,7 @@ export function Hero({ portraitSrc }: { portraitSrc: string | null }) {
           <motion.div
             initial={reduceMotion ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, delay: 0.26, ease: [0.16, 1, 0.3, 1] }}
             className="mt-9 flex flex-wrap items-center gap-3"
           >
             <ButtonLink href="#work" variant="primary" size="lg">

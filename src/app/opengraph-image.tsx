@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/content/site";
 
-export const alt = `${site.name} — I build across the stack`;
+export const alt = `${site.name} — Computer Engineering at UCF, working across hardware, embedded, software, machine learning, and systems`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -37,21 +37,23 @@ export default function OpengraphImage() {
           >
             {site.initials}
           </div>
-          <div style={{ display: "flex", color: "#7c7c87", fontSize: 20, letterSpacing: 3 }}>
-            {site.name.toUpperCase()}
+          <div style={{ display: "flex", color: "#82828d", fontSize: 20, letterSpacing: 3 }}>
+            COMPUTER ENGINEERING · UCF · &apos;27
           </div>
         </div>
 
+        {/* Mirrors the hero: the name carries the card, the layer row below
+            says what the name does. */}
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", color: "#f2f2f4", fontSize: 92, lineHeight: 1.05 }}>
-            I build across
+          <div style={{ display: "flex", color: "#f2f2f4", fontSize: 104, lineHeight: 1.02 }}>
+            {site.name}
           </div>
-          <div style={{ display: "flex", color: "#a78bff", fontSize: 92, lineHeight: 1.05 }}>
-            the stack.
+          <div style={{ display: "flex", color: "#a3a3ad", fontSize: 30, marginTop: 18 }}>
+            From transistors up to cloud services.
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 14, color: "#7c7c87", fontSize: 22 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, color: "#82828d", fontSize: 22 }}>
           {["Hardware", "Embedded", "Software", "ML", "Systems"].map((layer, index) => (
             <div key={layer} style={{ display: "flex", alignItems: "center", gap: 14 }}>
               {index > 0 ? <div style={{ display: "flex", color: "#a78bff" }}>→</div> : null}
