@@ -34,10 +34,24 @@ plus `face-forward` are enough if you would rather not draw the left ones. With
 no files at all the character simply does not appear, and the page makes no
 failed requests for it.
 
-## Before you export
+## These frames have been normalised
 
-**Trim the transparent margin and use one canvas size for all seven, with the
-feet on the bottom edge.** Frames of different sizes or with different amounts
-of padding make the character change size and hop as the cycle plays. If that
-is awkward to do by hand, upload them as they are and say so — they can be
-normalised in the repo instead.
+The files here are not the raw exports. The originals arrived at three
+different canvas sizes, with the character drawn at scales that differed by a
+third, on opaque white backgrounds — which would have made him change size and
+hop as the cycle played.
+
+`scripts/normalize-sprites.mjs` produced what is here: it cuts the background
+by flooding white inward from the edges (so the white shirt and shoes survive,
+being enclosed by outlines), crops to the figure, scales each frame so the
+character is one height throughout, and lays them all on an identical
+350 × 630 canvas with the feet on the bottom edge.
+
+To replace a frame, drop the new art in with the same name and run:
+
+```bash
+npm i --no-save sharp
+node scripts/normalize-sprites.mjs          # --analyze to measure only
+```
+
+It is safe to run repeatedly — already-normalised frames come out unchanged.

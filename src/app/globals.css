@@ -102,7 +102,7 @@
   --header-h: 4.5rem;
   --world-h: 13rem;
   --ground-offset: 3.25rem;
-  --character-h: 9.5rem;
+  --character-h: 10.5rem;
 
   /* Slow enough to read as a deliberate change of state. The fade is the
      fallback for browsers without view transitions; the wipe is the headline. */

@@ -15,7 +15,7 @@ npm run lint
 | --- | --- | --- |
 | Résumé PDF | `public/resume.pdf` | **Done.** Replace the file to update it; the path never changes. |
 | Headshot | `public/headshot_full.png` | **Done.** The name comes from `site.portraitName`; the build tries `.jpg`, `.jpeg`, `.png`, `.webp`, `.avif` in turn. Without a match the hero renders a monogram plate and makes no failed request. |
-| Character sprites | `public/sprite/` | **To add.** Seven frames — see `public/README.md`. Without them the world strip still runs; the character just is not in it. |
+| Character sprites | `public/sprite/` | **Done.** Seven normalised frames — see `public/sprite/README.md` for how to replace one. |
 | Real domain | `site.url` in `src/content/site.ts` | **To set.** Used for canonical URLs, the sitemap, and Open Graph tags. |
 
 ## The site scrolls sideways
