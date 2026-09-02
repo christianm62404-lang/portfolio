@@ -21,7 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
 
-const VIEW = 240;
+const VIEW = 224;
 const PAD = 16;
 const DOMAIN = 1.35;
 const STEPS_PER_FRAME = 3;
@@ -147,7 +147,7 @@ function ClassifyPanel() {
   const boundary = boundaryPoints(model, -DOMAIN, DOMAIN);
 
   return (
-    <div className="grid gap-6 sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)] sm:items-start">
+    <div className="grid gap-5 sm:grid-cols-[minmax(0,224px)_minmax(0,1fr)] sm:items-start">
       <div>
         <svg
           viewBox={`0 0 ${VIEW} ${VIEW}`}
@@ -304,7 +304,7 @@ function ClassifyPanel() {
           </div>
         </dl>
 
-        <p className="mt-5 text-[0.6875rem] leading-relaxed text-ink-faint">
+        <p className="mt-4 text-[0.6875rem] leading-relaxed text-ink-faint">
           Logistic regression, batch gradient descent on cross-entropy loss, learning rate{" "}
           {LEARNING_RATE}. The classes overlap on purpose — a dataset that separates
           perfectly makes precision and recall meaningless.
@@ -354,7 +354,7 @@ function ClusterPanel() {
   }, 0);
 
   return (
-    <div className="grid gap-6 sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)] sm:items-start">
+    <div className="grid gap-5 sm:grid-cols-[minmax(0,224px)_minmax(0,1fr)] sm:items-start">
       <svg
         viewBox={`0 0 ${VIEW} ${VIEW}`}
         className="h-auto w-full border border-line bg-canvas"

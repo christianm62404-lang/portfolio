@@ -18,6 +18,19 @@ npm run lint
 | Character sprites | `public/sprite/` | **Done.** Seven normalised frames — see `public/sprite/README.md` for how to replace one. |
 | Real domain | `site.url` in `src/content/site.ts` | **To set.** Used for canonical URLs, the sitemap, and Open Graph tags. |
 
+## The backdrop
+
+Four depths sit behind everything, each travelling at its own fraction of the
+scroll: a colour aura on the horizon, a field of points, tall traces in the
+middle distance, and shorter accent-tinted verticals near the ground. All of it
+is CSS gradients over palette tokens, so it costs no images and cross-fades with
+the theme.
+
+The aura hues (violet, indigo, magenta) are decorative tokens that carry their
+own alpha and are never used for text. Measured against real rendered pixels
+rather than token values, the worst text-on-backdrop contrast is 7.1:1 in dark
+and 6.3:1 in light.
+
 ## The site scrolls sideways
 
 Sections are panels laid into one horizontal track (`components/layout/track.tsx`),

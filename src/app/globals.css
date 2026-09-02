@@ -92,6 +92,21 @@
   inherits: true;
   initial-value: #4ade80;
 }
+@property --aura-violet {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(139 108 255 / 0.34);
+}
+@property --aura-indigo {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(74 96 255 / 0.28);
+}
+@property --aura-magenta {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(226 92 200 / 0.24);
+}
 
 :root {
   color-scheme: light dark;
@@ -100,9 +115,9 @@
      the track and the world strip over the bottom, so panels reserve room for
      both rather than sitting under them. */
   --header-h: 4.5rem;
-  --world-h: 13rem;
+  --world-h: 14rem;
   --ground-offset: 3.25rem;
-  --character-h: 10.5rem;
+  --character-h: 11rem;
 
   /* Slow enough to read as a deliberate change of state. The fade is the
      fallback for browsers without view transitions; the wipe is the headline. */
@@ -120,7 +135,10 @@
     --ink-faint var(--theme-fade),
     --signal var(--theme-fade),
     --signal-soft var(--theme-fade),
-    --live var(--theme-fade);
+    --live var(--theme-fade),
+    --aura-violet var(--theme-fade),
+    --aura-indigo var(--theme-fade),
+    --aura-magenta var(--theme-fade);
 
   --canvas: #08080a;
   --canvas: light-dark(#f4f4f1, #08080a);
@@ -160,15 +178,27 @@
 
   --live: #4ade80;
   --live: light-dark(#15803d, #4ade80);
+
+  /* Backdrop hues. Decorative only — nothing legible is ever drawn in these,
+     so they carry alpha and sit well below any contrast requirement. They are
+     an analogous family around the accent (violet, indigo, magenta) rather
+     than a second palette, which is what keeps the page vibrant without it
+     becoming a different site. */
+  --aura-violet: rgb(139 108 255 / 0.34);
+  --aura-violet: light-dark(rgb(124 92 255 / 0.20), rgb(139 108 255 / 0.34));
+  --aura-indigo: rgb(74 96 255 / 0.28);
+  --aura-indigo: light-dark(rgb(66 92 240 / 0.15), rgb(74 96 255 / 0.28));
+  --aura-magenta: rgb(226 92 200 / 0.24);
+  --aura-magenta: light-dark(rgb(214 72 178 / 0.13), rgb(226 92 200 / 0.24));
 }
 
 /* On a short or narrow viewport the world has to give room back to the
    content it sits under. */
 @media (max-height: 760px), (max-width: 900px) {
   :root {
-    --world-h: 9rem;
-    --ground-offset: 2.25rem;
-    --character-h: 6.75rem;
+    --world-h: 9.5rem;
+    --ground-offset: 2rem;
+    --character-h: 7rem;
   }
 }
 
@@ -219,6 +249,10 @@
 @keyframes trace {
   from { stroke-dashoffset: 240; }
   to { stroke-dashoffset: 0; }
+}
+@keyframes aura-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2%, -3%, 0) scale(1.07); }
 }
 @keyframes travel-hint {
   0% { transform: translateX(-100%); }
@@ -297,35 +331,41 @@
     height: 100%;
     display: flex;
     align-items: center;
-    gap: clamp(2rem, 4vw, 4.5rem);
-    padding-block: calc(var(--header-h) + 1.5rem) calc(var(--world-h) + 0.5rem);
-    padding-inline: clamp(1.25rem, 4vw, 4rem);
+    gap: clamp(2.75rem, 5.5vw, 7rem);
+    padding-block: calc(var(--header-h) + 2.25rem) calc(var(--world-h) + 1.25rem);
+    padding-inline: clamp(1.5rem, 5vw, 6rem);
   }
 
   /* A column within a panel — the unit the reader actually moves through.
      Every width lives here rather than as a utility on the element, so the
      stacking rule further down can override them all in one place.
 
-     A column that outgrows the panel scrolls on its own; its scrollbar is
-     hidden because the horizontal one is the site's only real scrollbar and a
-     second, thinner one inside a column reads as a mistake. */
+     A column that outgrows the panel scrolls on its own, and shows a thin
+     scrollbar when it does. Hiding it would be tidier and dishonest: on a
+     short window the overflow is real, and a reader given no indication that
+     a column continues simply never sees the rest of it. */
   .col {
     flex: 0 0 auto;
     max-height: 100%;
     overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-width: none;
-    width: min(24rem, 84vw);
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-bright) transparent;
+    width: min(26rem, 84vw);
   }
   .col::-webkit-scrollbar {
-    display: none;
+    width: 6px;
   }
-  .col-xs { width: min(18rem, 84vw); }
-  .col-sm { width: min(20rem, 68vw); }
-  .col-md { width: min(30rem, 88vw); }
-  .col-lg { width: min(34rem, 88vw); }
-  .col-xl { width: min(36rem, 90vw); }
-  .col-2xl { width: min(46rem, 92vw); }
+  .col::-webkit-scrollbar-thumb {
+    background: var(--color-line-bright);
+    border-radius: 999px;
+  }
+  .col-xs { width: min(19.5rem, 84vw); }
+  .col-sm { width: min(21rem, 68vw); }
+  .col-md { width: min(32rem, 88vw); }
+  .col-lg { width: min(36rem, 88vw); }
+  .col-xl { width: min(38rem, 90vw); }
+  .col-2xl { width: min(48rem, 92vw); }
 
   /* Narrow screens have no room to set one column beside another, so panels
      stack and the visitor swipes between sections rather than through columns.
@@ -336,7 +376,7 @@
       flex-direction: column;
       align-items: stretch;
       justify-content: flex-start;
-      gap: 1.75rem;
+      gap: 2.25rem;
       overflow-y: auto;
       overscroll-behavior-y: contain;
       padding-block: calc(var(--header-h) + 1rem) calc(var(--world-h) + 1rem);

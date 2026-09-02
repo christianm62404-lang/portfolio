@@ -245,7 +245,7 @@ export function TrackViewport({ children }: { children: ReactNode }) {
     <div
       ref={context?.ref}
       id="track"
-      className="track fixed inset-0 flex items-stretch overflow-x-auto overflow-y-hidden"
+      className="track fixed inset-0 z-10 flex items-stretch overflow-x-auto overflow-y-hidden"
     >
       {children}
     </div>

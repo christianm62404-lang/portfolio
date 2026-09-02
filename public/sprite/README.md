@@ -41,11 +41,18 @@ different canvas sizes, with the character drawn at scales that differed by a
 third, on opaque white backgrounds — which would have made him change size and
 hop as the cycle played.
 
-`scripts/normalize-sprites.mjs` produced what is here: it cuts the background
-by flooding white inward from the edges (so the white shirt and shoes survive,
-being enclosed by outlines), crops to the figure, scales each frame so the
-character is one height throughout, and lays them all on an identical
-350 × 630 canvas with the feet on the bottom edge.
+`scripts/normalize-sprites.mjs` produced what is here. It:
+
+- cuts the background by flooding white inward from the edges, so the
+  character's own white shirt and shoes survive — they are interior, walled off
+  by the dark ink outline the flood cannot cross;
+- peels away the thin white sticker outline the art traces around the whole
+  silhouette, which over a dark page reads as a halo;
+- crops to the figure and scales each frame so the character is one height
+  throughout, holding mid-stride frames very slightly shorter because a walking
+  body is;
+- lays them all on an identical 350 × 630 canvas with the feet on the bottom
+  edge, so the ground line never moves.
 
 To replace a frame, drop the new art in with the same name and run:
 

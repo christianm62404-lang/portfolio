@@ -9,25 +9,30 @@
  *   1. Cuts the background out by flood-filling white inward from the edges,
  *      which keeps the character's own whites — the shirt and the shoes are
  *      enclosed by outlines, so the fill cannot reach them.
- *   2. Crops each frame to what is actually drawn.
- *   3. Scales each frame so the character is the same height throughout. The
+ *   2. Strips the one-pixel white sticker outline the source art traces around
+ *      the whole silhouette, which over a dark page reads as a halo.
+ *   3. Crops each frame to what is actually drawn.
+ *   4. Scales each frame so the character is the same height throughout. The
  *      source frames are drawn at scales that differ by a third, so this is
  *      the step that stops him growing and shrinking as he walks.
- *   4. Lays each onto an identical canvas, centred, with the feet on the
+ *   5. Lays each onto an identical canvas, centred, with the feet on the
  *      bottom edge, so the ground line never moves.
- *   5. Writes palette PNGs, which pixel art quantises to a fraction of the
+ *   6. Writes palette PNGs, which pixel art quantises to a fraction of the
  *      original weight.
  *
  * Requires sharp, which is not a dependency of the site:
  *   npm i --no-save sharp && node scripts/normalize-sprites.mjs
  *
- * Pass --analyze to measure without writing anything.
+ * Pass --analyze to measure without writing anything, and --from <dir> to read
+ * the raw art from somewhere other than the output folder.
  */
 import { readdir, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
-const SOURCE = "public/sprite";
+const OUTPUT = "public/sprite";
+const fromFlag = process.argv.indexOf("--from");
+const SOURCE = fromFlag === -1 ? OUTPUT : process.argv[fromFlag + 1];
 const TARGET_HEIGHT = 620; // standing height in the output canvas
 const CANVAS_PADDING = 10; // breathing room so scaling never clips an outline
 
@@ -127,6 +132,48 @@ function cutBackground(data, width, height) {
   }
 }
 
+/**
+ * A pixel light enough to be part of the white outline traced around the
+ * figure. Skin does not qualify — its blue channel sits far below its red —
+ * so only the outline and genuinely white areas match.
+ */
+const isOutline = (r, g, b) => Math.min(r, g, b) >= 148 && Math.max(r, g, b) - Math.min(r, g, b) <= 62;
+
+/**
+ * Removes the sticker outline.
+ *
+ * The source art traces a thin white line around the whole silhouette, which
+ * on a dark page reads as a halo. It survives the background cut because
+ * anti-aliasing leaves it a shade too grey to look like background.
+ *
+ * Peeling it away from the edge inward, rather than keying out white, is what
+ * keeps the character's own white shirt and shoes: those are interior, walled
+ * off by the dark ink outline, so the peel never reaches them.
+ */
+function stripOutline(data, width, height, passes = 3) {
+  const alphaAt = (x, y) =>
+    x < 0 || y < 0 || x >= width || y >= height ? 0 : data[(y * width + x) * 4 + 3];
+
+  for (let pass = 0; pass < passes; pass += 1) {
+    const doomed = [];
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const index = y * width + x;
+        const o = index * 4;
+        if (data[o + 3] < 32) continue;
+        const exposed =
+          alphaAt(x - 1, y) < 32 ||
+          alphaAt(x + 1, y) < 32 ||
+          alphaAt(x, y - 1) < 32 ||
+          alphaAt(x, y + 1) < 32;
+        if (exposed && isOutline(data[o], data[o + 1], data[o + 2])) doomed.push(o);
+      }
+    }
+    if (doomed.length === 0) break;
+    for (const o of doomed) data[o + 3] = 0;
+  }
+}
+
 /** Tight box around everything still opaque. */
 function boundingBox(data, width, height) {
   let top = height;
@@ -152,6 +199,7 @@ async function measure(file) {
     .raw()
     .toBuffer({ resolveWithObject: true });
   cutBackground(data, info.width, info.height);
+  stripOutline(data, info.width, info.height);
   const box = boundingBox(data, info.width, info.height);
   return { file, data, info, box };
 }
@@ -190,7 +238,7 @@ const canvasWidth = Math.max(...measured.map((m) => m.drawnWidth)) + CANVAS_PADD
 
 console.log(`\ncanvas ${canvasWidth} x ${canvasHeight}\n`);
 
-await mkdir(SOURCE, { recursive: true });
+await mkdir(OUTPUT, { recursive: true });
 
 for (const m of measured) {
   const base = path.basename(m.file, ".png");
@@ -225,7 +273,7 @@ for (const m of measured) {
     .png({ palette: true, quality: 92, effort: 10 })
     .toBuffer();
 
-  await writeFile(path.join(SOURCE, outName), out);
+  await writeFile(path.join(OUTPUT, outName), out);
   console.log(
     `${outName.padEnd(20)} ${String(drawnWidth).padStart(3)}x${drawnHeight}  scale ${m.scale.toFixed(3)}  ${(out.length / 1024).toFixed(0)} KB`,
   );
@@ -244,7 +292,7 @@ const sheet = await sharp({
 })
   .composite(
     sheetTargets.map((name, index) => ({
-      input: path.join(SOURCE, `${name}.png`),
+      input: path.join(OUTPUT, `${name}.png`),
       left: index * canvasWidth,
       top: 0,
     })),

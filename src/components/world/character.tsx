@@ -101,7 +101,7 @@ export function Character({ manifest }: { manifest: SpriteManifest }) {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute bottom-[var(--ground-offset)] left-1/2 z-20 h-[var(--character-h)] w-[var(--character-h)] -translate-x-1/2"
+      className="pointer-events-none absolute bottom-[var(--ground-offset)] left-1/2 h-[var(--character-h)] w-[calc(var(--character-h)*0.62)] -translate-x-1/2"
     >
       {/* Every frame is stacked in the same box and only the active one is
           shown, so the browser decodes each sprite once and the walk never
@@ -114,7 +114,7 @@ export function Character({ manifest }: { manifest: SpriteManifest }) {
             src={src}
             alt=""
             fill
-            sizes="220px"
+            sizes="240px"
             priority={role === "forward"}
             className={cn(
               "object-contain object-bottom [image-rendering:pixelated]",

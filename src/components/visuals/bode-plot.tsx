@@ -11,8 +11,8 @@ const DB_MAX = 12;
 const DB_MIN = -60;
 
 const W = 440;
-const H = 220;
-const PAD = { top: 12, right: 34, bottom: 26, left: 34 };
+const H = 196;
+const PAD = { top: 10, right: 32, bottom: 24, left: 32 };
 const PLOT_W = W - PAD.left - PAD.right;
 const PLOT_H = H - PAD.top - PAD.bottom;
 
@@ -189,7 +189,7 @@ export function BodePlot() {
         </g>
       </svg>
 
-      <div className="mt-4">
+      <div className="mt-3">
         <label htmlFor={sliderId} className="label-mono">
           Cutoff frequency{" "}
           <span className="text-signal normal-case">{formatHz(cutoff)}</span>
@@ -206,7 +206,7 @@ export function BodePlot() {
         />
       </div>
 
-      <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-4 sm:grid-cols-4">
+      <dl className="mt-4 grid grid-cols-4 gap-3 border-t border-line pt-3">
         {[
           { label: "R", value: formatOhms(resistanceOhms) },
           { label: "C", value: `${(capacitanceFarads * 1e9).toFixed(0)} nF` },
@@ -225,7 +225,7 @@ export function BodePlot() {
         ))}
       </dl>
 
-      <p className="mt-4 text-[0.6875rem] leading-relaxed text-ink-faint">
+      <p className="mt-3 text-[0.6875rem] leading-relaxed text-ink-faint">
         Component values solved from{" "}
         <span className="text-ink-dim">fc = 1 / (2πRC)</span> for a{" "}
         {(capacitanceFarads * 1e9).toFixed(0)} nF capacitor — the curve is evaluated from

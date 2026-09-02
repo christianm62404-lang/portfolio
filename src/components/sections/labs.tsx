@@ -86,8 +86,8 @@ function LabPanel({
         </ul>
       </Reveal>
 
-      <Reveal delay={0.06} className="col col-2xl">
-        <div className="border border-line bg-panel p-5">{children}</div>
+      <Reveal delay={0.06} className="col col-xl">
+        <div className="border border-line bg-panel p-5 sm:p-6">{children}</div>
       </Reveal>
     </>
   );
