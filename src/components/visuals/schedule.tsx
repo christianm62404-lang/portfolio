@@ -16,8 +16,7 @@ const week = [
 const MAX_HOURS = 9;
 
 /**
- * TimeTrack's whole design decision is that a scheduled block and a logged
- * entry are different entities. So the visual shows both, on the same axis:
+ * In TimeTrack a scheduled block and a logged entry are different entities. So the visual shows both, on the same axis:
  * the outline is what was planned, the fill is what actually happened, and
  * the gap between them is the report the schema makes trivial.
  */

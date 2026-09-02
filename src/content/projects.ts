@@ -34,7 +34,7 @@ export const projects: Project[] = [
       "GitHub Actions",
     ],
     challenge:
-      "A Customer Profile Service where every read and write is tenant-aware. Search by email or phone, soft deletion so history survives, and GDPR-oriented deletion that genuinely removes a person — two requirements that pull in opposite directions and have to coexist in one data model.",
+      "A Customer Profile Service where every read and write is tenant-aware. Soft deletion so history survives, and GDPR-oriented deletion that genuinely removes a person — two requirements pulling opposite ways in one data model.",
     outcome:
       "Customer CRUD and lookup endpoints running inside the wider service architecture, built to the platform's REST conventions and reviewed by the team before merge.",
     learned:
@@ -98,7 +98,7 @@ export const projects: Project[] = [
       "MOSFET switching",
     ],
     challenge:
-      "Timing. An ultrasonic echo is measured in microseconds, the LCD wants to be written slowly, and the PWM output cannot stutter while either happens. Getting all three to share one timer subsystem meant thinking in interrupts rather than in sequential code.",
+      "Timing. An ultrasonic echo is measured in microseconds, the LCD wants writing slowly, and the PWM cannot stutter while either happens. Sharing one timer subsystem meant thinking in interrupts, not sequential code.",
     outcome:
       "A working prototype: distance sensed and displayed live, an ADC-read potentiometer driving PWM duty cycle, and a MOSFET switching a load the MCU could not drive directly.",
     learned:
@@ -110,19 +110,18 @@ export const projects: Project[] = [
     index: "04",
     name: "TimeTrack",
     kicker: "Workforce management & time tracking",
-    context: "Personal project — deployed at markstevens.tech",
-    role: "Sole developer — end to end",
-    period: "Personal project",
+    context: "Team project — deployed at markstevens.tech",
+    role: "Front-end and mobile developer",
     summary:
-      "A full-stack application for scheduling, time tracking, task management, and productivity reporting. I designed the schema, wrote the backend, built the interface, and shipped it to a live domain.",
-    layers: ["software", "systems"],
-    stack: ["React", "TypeScript", "PostgreSQL", "REST APIs", "Git"],
+      "An application for scheduling, time tracking, task management, and productivity reporting, built by a team. I worked on the front end and the mobile side, building the interfaces people actually schedule and log their time in.",
+    layers: ["software"],
+    stack: ["React", "TypeScript", "REST APIs", "Git"],
     challenge:
-      "Planned time and actual time are not the same thing, and most trackers conflate them. I modelled scheduled blocks and logged entries as separate entities from the start.",
+      "Planned time and actual time are not the same thing, and most trackers conflate them. Keeping scheduled blocks and logged entries distinct in the interface — on a phone screen as well as a desktop one — is what makes the difference visible.",
     outcome:
-      "Planned-versus-actual reporting falls out of the schema instead of being a special case bolted on later — and the whole thing is deployed and reachable rather than sitting in a repository.",
+      "Scheduling and logging views across web and mobile, consuming the platform's APIs, deployed and reachable rather than sitting in a repository.",
     learned:
-      "Getting the data model right early is worth more than any amount of clever code written afterwards.",
+      "Working on one part of a shared codebase means the contract with everyone else is the thing to get right. The interface can only be as clear as the data it is handed.",
     visual: "schedule",
     links: [{ label: "Visit markstevens.tech", href: "https://markstevens.tech" }],
   },

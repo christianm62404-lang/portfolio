@@ -41,7 +41,8 @@ export interface Project {
   context: string;
   /** Personal contribution — stated plainly, never inflated. */
   role: string;
-  period: string;
+  /** Omitted where a real date range is not known — the card drops the row. */
+  period?: string;
   /** One or two sentences that would make sense to a non-specialist. */
   summary: string;
   /** The layers this project touches; drives the system diagram links. */
