@@ -15,7 +15,6 @@ export const site = {
   description:
     "Christian Artigas is a Computer Engineering student at UCF working across embedded systems, electronics, full-stack software, and machine learning.",
   email: "christianm62404@gmail.com",
-  phone: "(321) 201-2313",
   resumePath: "/resume.pdf",
   /**
    * Headshot basename, without an extension, resolved against public/.
