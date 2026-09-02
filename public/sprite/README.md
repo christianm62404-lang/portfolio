@@ -46,8 +46,11 @@ hop as the cycle played.
 - cuts the background by flooding white inward from the edges, so the
   character's own white shirt and shoes survive — they are interior, walled off
   by the dark ink outline the flood cannot cross;
-- peels away the thin white sticker outline the art traces around the whole
-  silhouette, which over a dark page reads as a halo;
+- peels two pixels off the silhouette, unconditionally, taking the thin white
+  sticker outline with them. Removing it *by colour* leaves remnants: half that
+  ring blends down to a grey too dark for any threshold that does not also eat
+  the white shoes. A fixed depth cannot leave remnants, and costs a fifth of a
+  screen pixel of ink;
 - crops to the figure and scales each frame so the character is one height
   throughout, holding mid-stride frames very slightly shorter because a walking
   body is;

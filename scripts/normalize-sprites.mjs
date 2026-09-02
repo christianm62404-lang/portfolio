@@ -9,8 +9,8 @@
  *   1. Cuts the background out by flood-filling white inward from the edges,
  *      which keeps the character's own whites — the shirt and the shoes are
  *      enclosed by outlines, so the fill cannot reach them.
- *   2. Strips the one-pixel white sticker outline the source art traces around
- *      the whole silhouette, which over a dark page reads as a halo.
+ *   2. Peels two pixels off the silhouette, unconditionally, to take the white
+ *      sticker outline with them.
  *   3. Crops each frame to what is actually drawn.
  *   4. Scales each frame so the character is the same height throughout. The
  *      source frames are drawn at scales that differ by a third, so this is
@@ -108,65 +108,47 @@ function cutBackground(data, width, height) {
     if (y < height - 1) consider(index + width);
   }
 
-  // Soften the cut edge: a pixel kept next to a cleared one is part of the
-  // original anti-aliasing, so its alpha follows how light it is.
+  // Alpha is binary here. Ramping it by how light a pixel is — the obvious
+  // thing — is what left a grey rim: it kept the anti-aliased matte at nearly
+  // full opacity wherever the blend happened to fall below the threshold.
+  // erodeEdge removes that ring outright instead.
   for (let index = 0; index < total; index += 1) {
-    const o = index * 4;
-    if (outside[index]) {
-      data[o + 3] = 0;
-      continue;
-    }
-    const x = index % width;
-    const y = (index / width) | 0;
-    const touchesOutside =
-      (x > 0 && outside[index - 1]) ||
-      (x < width - 1 && outside[index + 1]) ||
-      (y > 0 && outside[index - width]) ||
-      (y < height - 1 && outside[index + width]);
-    if (!touchesOutside) {
-      data[o + 3] = 255;
-      continue;
-    }
-    const luma = (data[o] + data[o + 1] + data[o + 2]) / 3;
-    data[o + 3] = luma <= 200 ? 255 : Math.round(255 * (1 - (luma - 200) / 55));
+    data[index * 4 + 3] = outside[index] ? 0 : 255;
   }
 }
 
 /**
- * A pixel light enough to be part of the white outline traced around the
- * figure. Skin does not qualify — its blue channel sits far below its red —
- * so only the outline and genuinely white areas match.
- */
-const isOutline = (r, g, b) => Math.min(r, g, b) >= 148 && Math.max(r, g, b) - Math.min(r, g, b) <= 62;
-
-/**
- * Removes the sticker outline.
+ * Peels rings of pixels off the silhouette.
  *
- * The source art traces a thin white line around the whole silhouette, which
- * on a dark page reads as a halo. It survives the background cut because
- * anti-aliasing leaves it a shade too grey to look like background.
+ * The art traces a thin white line around the figure, which over a dark page
+ * reads as a halo. Measured in the source, that line is one pixel deep: the
+ * outermost ring averages a mid grey where the white has been anti-aliased
+ * against the ink, and the ring behind it is already the ink itself.
  *
- * Peeling it away from the edge inward, rather than keying out white, is what
- * keeps the character's own white shirt and shoes: those are interior, walled
- * off by the dark ink outline, so the peel never reaches them.
+ * Earlier this was done by colour — remove edge pixels that look white — and
+ * it left remnants, because half that ring blends down to a grey too dark for
+ * any threshold that does not also eat the character's white shoes. Peeling a
+ * fixed depth cannot leave remnants. It costs one extra pixel of ink, which at
+ * the size these are drawn is a fifth of a screen pixel.
  */
-function stripOutline(data, width, height, passes = 3) {
+function erodeEdge(data, width, height, rings = 2) {
   const alphaAt = (x, y) =>
     x < 0 || y < 0 || x >= width || y >= height ? 0 : data[(y * width + x) * 4 + 3];
 
-  for (let pass = 0; pass < passes; pass += 1) {
+  for (let ring = 0; ring < rings; ring += 1) {
     const doomed = [];
     for (let y = 0; y < height; y += 1) {
       for (let x = 0; x < width; x += 1) {
-        const index = y * width + x;
-        const o = index * 4;
+        const o = (y * width + x) * 4;
         if (data[o + 3] < 32) continue;
-        const exposed =
+        if (
           alphaAt(x - 1, y) < 32 ||
           alphaAt(x + 1, y) < 32 ||
           alphaAt(x, y - 1) < 32 ||
-          alphaAt(x, y + 1) < 32;
-        if (exposed && isOutline(data[o], data[o + 1], data[o + 2])) doomed.push(o);
+          alphaAt(x, y + 1) < 32
+        ) {
+          doomed.push(o);
+        }
       }
     }
     if (doomed.length === 0) break;
@@ -199,7 +181,7 @@ async function measure(file) {
     .raw()
     .toBuffer({ resolveWithObject: true });
   cutBackground(data, info.width, info.height);
-  stripOutline(data, info.width, info.height);
+  erodeEdge(data, info.width, info.height);
   const box = boundingBox(data, info.width, info.height);
   return { file, data, info, box };
 }
