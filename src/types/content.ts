@@ -95,20 +95,7 @@ export interface EducationEntry {
   detail?: string;
 }
 
-export interface JourneyStage {
-  id: string;
-  /** Broad stage label rather than a fabricated date. */
-  marker: string;
-  title: string;
-  layer: LayerId;
-  body: string;
-}
 
-export interface Principle {
-  index: string;
-  title: string;
-  body: string;
-}
 
 export interface CertificationEntry {
   name: string;

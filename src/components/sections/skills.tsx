@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { skillGroups } from "@/content/skills";
 import { layerById } from "@/content/layers";
-import { MonoLabel, Section, SectionHeading } from "@/components/ui/primitives";
+import { MonoLabel, Panel, SectionHeading } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
 
@@ -46,7 +46,7 @@ export function Skills() {
   };
 
   return (
-    <Section id="skills" className="border-t border-line">
+    <Panel id="skills" className="border-l border-line">
       <SectionHeading
         index="04"
         eyebrow="Skills"
@@ -62,101 +62,99 @@ export function Skills() {
         ]}
       />
 
-      <div className="mt-14 grid gap-8 lg:grid-cols-[19rem_minmax(0,1fr)] lg:gap-14">
-        <div
-          role="tablist"
-          aria-orientation="vertical"
-          aria-label="Skill categories"
-          onKeyDown={onKeyDown}
-          className="-mx-5 flex gap-1 overflow-x-auto px-5 pb-2 mask-fade-x lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0 lg:[mask-image:none]"
-        >
-          {skillGroups.map((group, index) => {
-            const isActive = group.id === activeId;
-            return (
-              <button
-                key={group.id}
-                ref={(element) => {
-                  tabRefs.current[index] = element;
-                }}
-                type="button"
-                role="tab"
-                id={`skills-tab-${group.id}`}
-                aria-selected={isActive}
-                aria-controls={`skills-panel-${group.id}`}
-                tabIndex={isActive ? 0 : -1}
-                onClick={() => setActiveId(group.id)}
+      <div
+        role="tablist"
+        aria-orientation="vertical"
+        aria-label="Skill categories"
+        onKeyDown={onKeyDown}
+        className="col col-xs flex flex-col gap-1"
+      >
+        {skillGroups.map((group, index) => {
+          const isActive = group.id === activeId;
+          return (
+            <button
+              key={group.id}
+              ref={(element) => {
+                tabRefs.current[index] = element;
+              }}
+              type="button"
+              role="tab"
+              id={`skills-tab-${group.id}`}
+              aria-selected={isActive}
+              aria-controls={`skills-panel-${group.id}`}
+              tabIndex={isActive ? 0 : -1}
+              onClick={() => setActiveId(group.id)}
+              className={cn(
+                "group relative flex w-full shrink-0 items-center gap-3 border px-4 py-3 text-left transition-colors duration-300",
+                isActive
+                  ? "border-line-bright bg-panel-2 text-ink"
+                  : "border-transparent text-ink-faint hover:border-line hover:text-ink-dim",
+              )}
+            >
+              <MonoLabel className={isActive ? "text-signal" : undefined}>
+                {group.index}
+              </MonoLabel>
+              <span className="text-sm font-medium tracking-tight">{group.name}</span>
+              <span
+                aria-hidden
                 className={cn(
-                  "group relative flex shrink-0 items-center gap-3 border px-4 py-3 text-left whitespace-nowrap transition-colors duration-300 lg:w-full lg:whitespace-normal",
-                  isActive
-                    ? "border-line-bright bg-panel-2 text-ink"
-                    : "border-transparent text-ink-faint hover:border-line hover:text-ink-dim",
+                  "ml-auto font-mono text-[0.625rem] transition-colors",
+                  isActive ? "text-signal" : "text-ink-faint/60",
                 )}
               >
-                <MonoLabel className={isActive ? "text-signal" : undefined}>
-                  {group.index}
-                </MonoLabel>
-                <span className="text-sm font-medium tracking-tight">{group.name}</span>
-                <span
-                  aria-hidden
-                  className={cn(
-                    "ml-auto hidden font-mono text-[0.625rem] transition-colors lg:block",
-                    isActive ? "text-signal" : "text-ink-faint/60",
-                  )}
-                >
-                  {group.items.length}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div
-          role="tabpanel"
-          id={`skills-panel-${active.id}`}
-          aria-labelledby={`skills-tab-${active.id}`}
-          tabIndex={0}
-          className="border border-line bg-panel p-6 outline-offset-2 sm:p-8"
-        >
-          <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
-            <h3 className="text-xl font-medium tracking-tight sm:text-2xl">{active.name}</h3>
-            <MonoLabel className="text-signal">
-              {layer.index} · {layer.name}
-            </MonoLabel>
-          </div>
-
-          <p className="mt-5 max-w-xl text-sm leading-relaxed text-ink-dim">
-            {active.description}
-          </p>
-
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.ul
-              key={active.id}
-              className="mt-7 flex flex-wrap gap-2"
-              initial={reduceMotion ? false : "hidden"}
-              animate="visible"
-              exit={reduceMotion ? undefined : "hidden"}
-              variants={{
-                hidden: { opacity: 0 },
-                visible: { opacity: 1, transition: { staggerChildren: 0.022 } },
-              }}
-            >
-              {active.items.map((item) => (
-                <motion.li
-                  key={item}
-                  variants={{
-                    hidden: { opacity: 0, y: 6 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
-                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="border border-line bg-canvas px-3 py-2 text-[0.8125rem] text-ink-dim transition-colors duration-200 hover:border-signal/50 hover:text-ink"
-                >
-                  {item}
-                </motion.li>
-              ))}
-            </motion.ul>
-          </AnimatePresence>
-        </div>
+                {group.items.length}
+              </span>
+            </button>
+          );
+        })}
       </div>
-    </Section>
+
+      <div
+        role="tabpanel"
+        id={`skills-panel-${active.id}`}
+        aria-labelledby={`skills-tab-${active.id}`}
+        tabIndex={0}
+        className="col col-xl border border-line bg-panel p-6 outline-offset-2"
+      >
+        <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+          <h3 className="text-xl font-medium tracking-tight sm:text-2xl">{active.name}</h3>
+          <MonoLabel className="text-signal">
+            {layer.index} · {layer.name}
+          </MonoLabel>
+        </div>
+
+        <p className="mt-5 max-w-xl text-sm leading-relaxed text-ink-dim">
+          {active.description}
+        </p>
+
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.ul
+            key={active.id}
+            className="mt-7 flex flex-wrap gap-2"
+            initial={reduceMotion ? false : "hidden"}
+            animate="visible"
+            exit={reduceMotion ? undefined : "hidden"}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: { opacity: 1, transition: { staggerChildren: 0.022 } },
+            }}
+          >
+            {active.items.map((item) => (
+              <motion.li
+                key={item}
+                variants={{
+                  hidden: { opacity: 0, y: 6 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="border border-line bg-canvas px-3 py-2 text-[0.8125rem] text-ink-dim transition-colors duration-200 hover:border-signal/50 hover:text-ink"
+              >
+                {item}
+              </motion.li>
+            ))}
+          </motion.ul>
+      </AnimatePresence>
+      </div>
+    </Panel>
   );
 }

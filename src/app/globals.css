@@ -96,6 +96,14 @@
 :root {
   color-scheme: light dark;
 
+  /* Layout metrics for the sideways scroll. The header floats over the top of
+     the track and the world strip over the bottom, so panels reserve room for
+     both rather than sitting under them. */
+  --header-h: 4.5rem;
+  --world-h: 13rem;
+  --ground-offset: 3.25rem;
+  --character-h: 9.5rem;
+
   /* Slow enough to read as a deliberate change of state. The fade is the
      fallback for browsers without view transitions; the wipe is the headline. */
   --theme-fade: 600ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -154,6 +162,16 @@
   --live: light-dark(#15803d, #4ade80);
 }
 
+/* On a short or narrow viewport the world has to give room back to the
+   content it sits under. */
+@media (max-height: 760px), (max-width: 900px) {
+  :root {
+    --world-h: 9rem;
+    --ground-offset: 2.25rem;
+    --character-h: 6.75rem;
+  }
+}
+
 /* An explicit choice pins `color-scheme`, which is what `light-dark()`
    resolves against — so the toggle needs to set nothing else. */
 :root[data-theme="light"] {
@@ -187,7 +205,7 @@
   --animate-pulse-dot: pulse-dot 2.4s ease-in-out infinite;
   --animate-trace: trace 2.6s linear infinite;
   --animate-sweep: sweep 3.4s var(--ease-out-expo) infinite;
-  --animate-scroll-hint: scroll-hint 2.2s var(--ease-out-expo) infinite;
+  --animate-travel-hint: travel-hint 2.2s var(--ease-out-expo) infinite;
 }
 
 @keyframes marquee {
@@ -202,9 +220,9 @@
   from { stroke-dashoffset: 240; }
   to { stroke-dashoffset: 0; }
 }
-@keyframes scroll-hint {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(250%); }
+@keyframes travel-hint {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
 }
 @keyframes sweep {
   0% { transform: translateX(-110%); }
@@ -217,9 +235,6 @@
   }
 
   html {
-    scroll-behavior: smooth;
-    /* Sticky header height + breathing room for anchor jumps. */
-    scroll-padding-top: 6.5rem;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -230,7 +245,14 @@
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
-    overflow-x: clip;
+    /* The track owns scrolling; the document itself never moves. */
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  html {
+    /* No vertical scroll to smooth, and the track handles its own. */
+    scroll-behavior: auto;
   }
 
   ::selection {
@@ -257,6 +279,89 @@
 
   svg text {
     font-family: var(--font-mono);
+  }
+}
+
+@layer components {
+  /* The sideways scroller. Panels are laid into it as a flex row. */
+  .track {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-bright) transparent;
+    overscroll-behavior-x: contain;
+  }
+
+  /* One screen of the site. Width comes from the columns inside it; the height
+     is fixed, and content is inset from the header and the world strip. */
+  .panel {
+    flex: 0 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: clamp(2rem, 4vw, 4.5rem);
+    padding-block: calc(var(--header-h) + 1.5rem) calc(var(--world-h) + 0.5rem);
+    padding-inline: clamp(1.25rem, 4vw, 4rem);
+  }
+
+  /* A column within a panel — the unit the reader actually moves through.
+     Every width lives here rather than as a utility on the element, so the
+     stacking rule further down can override them all in one place.
+
+     A column that outgrows the panel scrolls on its own; its scrollbar is
+     hidden because the horizontal one is the site's only real scrollbar and a
+     second, thinner one inside a column reads as a mistake. */
+  .col {
+    flex: 0 0 auto;
+    max-height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    width: min(24rem, 84vw);
+  }
+  .col::-webkit-scrollbar {
+    display: none;
+  }
+  .col-xs { width: min(18rem, 84vw); }
+  .col-sm { width: min(20rem, 68vw); }
+  .col-md { width: min(30rem, 88vw); }
+  .col-lg { width: min(34rem, 88vw); }
+  .col-xl { width: min(36rem, 90vw); }
+  .col-2xl { width: min(46rem, 92vw); }
+
+  /* Narrow screens have no room to set one column beside another, so panels
+     stack and the visitor swipes between sections rather than through columns.
+     Without this the site is thirty screens wide on a phone. */
+  @media (max-width: 900px) {
+    .panel {
+      width: 100vw;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 1.75rem;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      padding-block: calc(var(--header-h) + 1rem) calc(var(--world-h) + 1rem);
+    }
+    .col,
+    .col-xs,
+    .col-sm,
+    .col-md,
+    .col-lg,
+    .col-xl,
+    .col-2xl {
+      width: 100%;
+      max-height: none;
+      overflow: visible;
+    }
+  }
+
+  /* Panels snap gently on touch, where flicking is the only input. */
+  @media (pointer: coarse) {
+    .track {
+      scroll-snap-type: x proximity;
+    }
+    .panel {
+      scroll-snap-align: start;
+    }
   }
 }
 
@@ -396,9 +501,6 @@
 /* Motion is a layer of the design, not the design itself.
    When it is unwelcome, remove it entirely rather than shortening it. */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
   *,
   *::before,
   *::after {
@@ -411,7 +513,7 @@
 
 /* Firefox/WebKit scrollbar, tuned to the panel palette. */
 @supports selector(::-webkit-scrollbar) {
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar { width: 10px; height: 12px; }
   ::-webkit-scrollbar-track { background: var(--color-canvas); }
   ::-webkit-scrollbar-thumb {
     background: var(--color-line-bright);

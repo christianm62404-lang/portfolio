@@ -16,7 +16,13 @@ import { useMotionPreference } from "@/hooks/use-motion-preference";
  * the aria wiring; the animation is layered on top with AnimatePresence so the
  * exit transition can finish before unmount.
  */
-export function MobileMenu({ active }: { active: string }) {
+export function MobileMenu({
+  active,
+  onNavigate,
+}: {
+  active: string;
+  onNavigate?: (id: string) => void;
+}) {
   const [open, setOpen] = useState(false);
   const reduceMotion = useMotionPreference();
 
@@ -97,7 +103,13 @@ export function MobileMenu({ active }: { active: string }) {
                       <li key={item.id} className="border-b border-line last:border-0">
                         <a
                           href={`#${item.id}`}
-                          onClick={() => setOpen(false)}
+                          onClick={(event) => {
+                            if (onNavigate) {
+                              event.preventDefault();
+                              onNavigate(item.id);
+                            }
+                            setOpen(false);
+                          }}
                           aria-current={active === item.id ? "true" : undefined}
                           className={cn(
                             "flex items-baseline gap-4 py-4 text-2xl font-medium tracking-tight transition-colors",

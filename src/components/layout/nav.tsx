@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { navItems, site } from "@/content/site";
 import { useActiveSection } from "@/hooks/use-active-section";
+import { useTrackElement, useTrackNavigation, useTrackProgress } from "@/components/layout/track";
 import { MonoLabel, StatusDot } from "@/components/ui/primitives";
 import { ButtonLink } from "@/components/ui/button";
 import { MobileMenu } from "@/components/layout/mobile-menu";
@@ -15,27 +16,26 @@ const sectionIds = navItems.map((item) => item.id);
 
 export function Nav() {
   const [condensed, setCondensed] = useState(false);
-  const active = useActiveSection(sectionIds);
+  const trackRef = useTrackElement();
+  const active = useActiveSection(sectionIds, trackRef);
+  const goToSection = useTrackNavigation();
+  const progress = useTrackProgress();
   const reduceMotion = useMotionPreference();
 
   useEffect(() => {
-    // A single passive listener with a rAF guard: the header state is derived
-    // from scroll position but never blocks the scroll itself.
-    let frame = 0;
-    const onScroll = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(() => {
-        frame = 0;
-        setCondensed(window.scrollY > 24);
-      });
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      if (frame) cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, []);
+    // The header gains its bar once the visitor has left the first panel.
+    // Derived from the track's own progress value, so it costs no listener.
+    if (!progress) return;
+    const update = (value: number) => setCondensed(value > 0.005);
+    update(progress.get());
+    return progress.on("change", update);
+  }, [progress]);
+
+  const onNavigate = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    if (!goToSection) return;
+    event.preventDefault();
+    goToSection(id);
+  };
 
   return (
     <header
@@ -57,8 +57,9 @@ export function Nav() {
       <div className="relative mx-auto flex w-full max-w-[1240px] items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
         <a
           href="#home"
+          onClick={(event) => onNavigate(event, "home")}
           className="group flex items-center gap-3"
-          aria-label={`${site.name} — back to top`}
+          aria-label={`${site.name} — back to the start`}
         >
           <span
             className={cn(
@@ -92,6 +93,7 @@ export function Nav() {
               <a
                 key={item.id}
                 href={`#${item.id}`}
+                onClick={(event) => onNavigate(event, item.id)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
                   "relative rounded-full px-3.5 py-1.5 text-[0.8125rem] transition-colors duration-200",
@@ -145,7 +147,7 @@ export function Nav() {
             <ArrowUpRight />
           </ButtonLink>
 
-          <MobileMenu active={active} />
+          <MobileMenu active={active} onNavigate={goToSection} />
         </div>
       </div>
     </header>

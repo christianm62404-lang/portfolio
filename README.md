@@ -15,7 +15,29 @@ npm run lint
 | --- | --- | --- |
 | Résumé PDF | `public/resume.pdf` | **Done.** Replace the file to update it; the path never changes. |
 | Headshot | `public/headshot_full.png` | **Done.** The name comes from `site.portraitName`; the build tries `.jpg`, `.jpeg`, `.png`, `.webp`, `.avif` in turn. Without a match the hero renders a monogram plate and makes no failed request. |
+| Character sprites | `public/sprite/` | **To add.** Seven frames — see `public/README.md`. Without them the world strip still runs; the character just is not in it. |
 | Real domain | `site.url` in `src/content/site.ts` | **To set.** Used for canonical URLs, the sitemap, and Open Graph tags. |
+
+## The site scrolls sideways
+
+Sections are panels laid into one horizontal track (`components/layout/track.tsx`),
+and the reader travels through columns rather than down a page. The track owns
+three input paths — the wheel, held arrow keys, and the scrollbar — and
+publishes the resulting direction of travel so the character at the bottom of
+the screen walks the right way.
+
+- A **vertical** wheel is mapped onto the horizontal axis, because that is what
+  a trackpad and a mouse actually produce.
+- The wheel yields first to any panel or column under the pointer that can
+  still scroll vertically, and the arrow keys yield to sliders and to the
+  skills tab list, which bind them themselves.
+- Below 900px there is no room to set one column beside another, so panels
+  stack and the visitor swipes between sections instead — seven screens rather
+  than thirty.
+
+Column widths all live in the components layer of `globals.css` as `.col-*`
+classes rather than as utilities on elements, which is what lets that stacking
+rule override every one of them in a single place.
 
 ## How the content is organised
 
@@ -30,8 +52,6 @@ Nothing a visitor reads is hard-coded in a component. Everything lives in
 | `projects.ts` | Work entries, including which visual treatment each uses |
 | `skills.ts` | Skill groups, each tied to a layer |
 | `experience.ts` | Roles, education, certifications |
-| `journey.ts` | Timeline stages |
-| `principles.ts` | The "How I think" entries |
 
 ### Adding a project
 
@@ -44,7 +64,7 @@ the component in `src/components/visuals/`, and add a case to
 `challenge`, `outcome`, and `learned` are optional — a project with none of them
 renders a compact card rather than an empty placeholder.
 
-### Adding an experience, skill group, or timeline stage
+### Adding an experience or skill group
 
 Append to the relevant array. The section renders whatever is there, and the
 counts in the section headers are derived, so they stay correct.
@@ -55,7 +75,8 @@ counts in the section headers are derived, so they stay correct.
 src/
 ├── app/            layout, page, metadata, OG image, sitemap, robots
 ├── components/
-│   ├── layout/     nav, mobile menu, scroll progress, footer
+│   ├── layout/     track, nav, mobile menu, progress
+│   ├── world/      the parallax strip and the walking character
 │   ├── sections/   one component per page section
 │   ├── projects/   project card, layer meter, visual switch
 │   ├── visuals/    the interactive pieces (topology, RBAC shell, board,

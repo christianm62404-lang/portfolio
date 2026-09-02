@@ -1,37 +1,47 @@
 import { findPortrait } from "@/lib/portrait";
+import { readSpriteManifest } from "@/lib/sprite";
+import { TrackProvider, TrackViewport } from "@/components/layout/track";
+import { Nav } from "@/components/layout/nav";
+import { ScrollProgress } from "@/components/layout/scroll-progress";
+import { World } from "@/components/world/world";
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
 import { Work } from "@/components/sections/work";
 import { Labs } from "@/components/sections/labs";
 import { Skills } from "@/components/sections/skills";
 import { Experience } from "@/components/sections/experience";
-import { Journey } from "@/components/sections/journey";
-import { Principles } from "@/components/sections/principles";
 import { Contact } from "@/components/sections/contact";
 
 /**
- * One page, composed of independent sections.
+ * One page that runs sideways.
  *
- * Each section owns its own data and its own client boundary, so the page
- * itself stays a server component and only the genuinely interactive pieces
- * ship JavaScript.
+ * Sections are panels laid into a single horizontal track, and a character
+ * walks along the bottom of the screen in whichever direction the track is
+ * travelling. The header, the progress bar, and the world strip sit outside
+ * the scrolling element but inside its provider, so they can read its state
+ * without moving with it.
+ *
+ * The portrait and the character's frames are resolved from the filesystem
+ * here, because the components that use them are client components.
  */
 export default function Home() {
-  // Resolved here rather than inside the hero, which is a client component and
-  // cannot read the filesystem.
   const portraitSrc = findPortrait();
+  const sprites = readSpriteManifest();
 
   return (
-    <>
-      <Hero portraitSrc={portraitSrc} />
-      <About />
-      <Work />
-      <Labs />
-      <Skills />
-      <Experience />
-      <Journey />
-      <Principles />
-      <Contact />
-    </>
+    <TrackProvider>
+      <ScrollProgress />
+      <Nav />
+      <TrackViewport>
+        <Hero portraitSrc={portraitSrc} />
+        <About />
+        <Work />
+        <Labs />
+        <Skills />
+        <Experience />
+        <Contact />
+      </TrackViewport>
+      <World manifest={sprites} />
+    </TrackProvider>
   );
 }

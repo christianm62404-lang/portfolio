@@ -2,9 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import { site } from "@/content/site";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
-import { Nav } from "@/components/layout/nav";
-import { ScrollProgress } from "@/components/layout/scroll-progress";
-import { Footer } from "@/components/layout/footer";
 import "./globals.css";
 
 const inter = Inter({
@@ -117,15 +114,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased">
         <a
           href="#work"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[70] focus:border focus:border-signal focus:bg-canvas focus:px-4 focus:py-2 focus:text-sm"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[80] focus:border focus:border-signal focus:bg-canvas focus:px-4 focus:py-2 focus:text-sm"
         >
-          Skip to main content
+          Skip to the work
         </a>
 
-        <ScrollProgress />
-        <Nav />
-        <main>{children}</main>
-        <Footer />
+        {children}
 
         <script
           type="application/ld+json"

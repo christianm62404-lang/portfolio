@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
  * The cursor drives two motion values that feed a parallax field and a soft
  * spotlight. They are motion values rather than React state on purpose — the
  * pointer can fire dozens of events per second and none of them should cause
- * a re-render of the section.
+ * a re-render of the panel.
  */
 export function Hero({ portraitSrc }: { portraitSrc: string | null }) {
   const containerRef = useRef<HTMLElement>(null);
@@ -35,9 +35,8 @@ export function Hero({ portraitSrc }: { portraitSrc: string | null }) {
   const gridY = useTransform(smoothY, [0, 1], [10, -10]);
   const glowX = useTransform(smoothX, [0, 1], ["30%", "70%"]);
   const glowY = useTransform(smoothY, [0, 1], ["25%", "75%"]);
-  // The portrait leans very slightly toward the cursor, like a card on a desk.
-  const portraitTiltY = useTransform(smoothX, [0, 1], [4, -4]);
-  const portraitTiltX = useTransform(smoothY, [0, 1], [-3, 3]);
+  const tiltY = useTransform(smoothX, [0, 1], [4, -4]);
+  const tiltX = useTransform(smoothY, [0, 1], [-3, 3]);
 
   useEffect(() => {
     const element = containerRef.current;
@@ -71,12 +70,7 @@ export function Hero({ portraitSrc }: { portraitSrc: string | null }) {
   }, [interactive, pointerX, pointerY]);
 
   return (
-    <section
-      ref={containerRef}
-      id="home"
-      className="relative flex min-h-[100svh] items-center overflow-hidden px-5 pt-28 pb-20 sm:px-8 lg:px-12"
-    >
-      {/* Parallax field. Decorative and inert. */}
+    <section ref={containerRef} id="home" className="panel relative overflow-hidden">
       <motion.div
         aria-hidden
         className="grid-field pointer-events-none absolute -inset-24 opacity-[0.55]"
@@ -93,100 +87,99 @@ export function Hero({ portraitSrc }: { portraitSrc: string | null }) {
           />
         ) : null}
       </div>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-canvas to-transparent"
-      />
 
-      <div className="relative mx-auto grid w-full max-w-[1240px] items-center gap-10 sm:gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-20">
-        {/* Portrait first in the DOM so the face leads on a phone, moved to
-            the second column on wide screens where reading order is lateral. */}
+      {/* The face is the thing worth meeting first. */}
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        className="col col-sm relative"
+        style={
+          interactive
+            ? { rotateY: tiltY, rotateX: tiltX, transformPerspective: 1200 }
+            : undefined
+        }
+      >
+        <Portrait src={portraitSrc} priority />
+      </motion.div>
+
+      <div className="col col-lg relative">
         <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="w-[min(15rem,62%)] sm:w-[min(18rem,52%)] lg:order-2 lg:w-full lg:max-w-[26rem] lg:justify-self-end"
-          style={
-            interactive
-              ? { rotateY: portraitTiltY, rotateX: portraitTiltX, transformPerspective: 1200 }
-              : undefined
-          }
+          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-wrap items-center gap-x-5 gap-y-2"
         >
-          <Portrait src={portraitSrc} priority />
+          <span className="flex items-center gap-2">
+            <StatusDot />
+            <MonoLabel>{site.location}</MonoLabel>
+          </span>
+          <span className="hidden h-3 w-px bg-line sm:block" />
+          <MonoLabel>Computer Engineering · UCF · &apos;27</MonoLabel>
         </motion.div>
 
-        <div className="lg:order-1">
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-wrap items-center gap-x-5 gap-y-2"
-          >
-            <span className="flex items-center gap-2">
-              <StatusDot />
-              <MonoLabel>{site.location}</MonoLabel>
-            </span>
-            <span className="hidden h-3 w-px bg-line sm:block" />
-            <MonoLabel>Computer Engineering · UCF · &apos;27</MonoLabel>
-          </motion.div>
+        <motion.h1
+          initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.85, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
+          className="text-gradient-ink mt-5 text-[clamp(2.4rem,5.6vw,4.25rem)] leading-[0.95] font-semibold tracking-[-0.045em]"
+        >
+          {site.name}
+        </motion.h1>
 
-          <motion.h1
-            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
-            className="text-gradient-ink mt-6 text-[clamp(2.6rem,7.2vw,5rem)] leading-[0.95] font-semibold tracking-[-0.045em]"
-          >
-            {site.name}
-          </motion.h1>
+        <motion.p
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-5 text-base leading-relaxed text-ink-dim sm:text-lg"
+        >
+          A computer engineering student who works from transistors up to cloud
+          services, and finds the same question interesting at every level.
+        </motion.p>
 
-          <motion.p
-            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 max-w-lg text-lg leading-relaxed text-ink-dim sm:text-xl"
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.26, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-8 flex flex-wrap items-center gap-3"
+        >
+          <ButtonLink href="#work" variant="primary" size="md">
+            See the work
+          </ButtonLink>
+          <ButtonLink
+            href={site.resumePath}
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="outline"
+            size="md"
           >
-            A computer engineering student who works from transistors up to cloud
-            services, and finds the same question interesting at every level.
-          </motion.p>
+            Resume
+          </ButtonLink>
+        </motion.div>
 
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.26, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-9 flex flex-wrap items-center gap-3"
-          >
-            <ButtonLink href="#work" variant="primary" size="lg">
-              See the work
-            </ButtonLink>
-            <ButtonLink
-              href={site.resumePath}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="outline"
-              size="lg"
-            >
-              Resume
-            </ButtonLink>
-          </motion.div>
-        </div>
+        <TravelCue />
       </div>
-
-      <ScrollCue />
     </section>
   );
 }
 
-function ScrollCue() {
+/**
+ * Says which way the site goes. A sideways site has to, once — nobody arrives
+ * expecting it.
+ */
+function TravelCue() {
   return (
-    <a
-      href="#about"
-      className="group absolute inset-x-0 bottom-6 mx-auto hidden w-fit flex-col items-center gap-2 text-ink-faint transition-colors hover:text-ink lg:flex"
-    >
-      <MonoLabel className="transition-colors group-hover:text-ink">Scroll</MonoLabel>
-      <span aria-hidden className="relative block h-10 w-px overflow-hidden bg-line">
-        <span className="absolute inset-x-0 top-0 h-4 animate-scroll-hint bg-signal" />
+    <div className="mt-12 flex items-center gap-3 text-ink-faint">
+      <MonoLabel>Scroll, or use</MonoLabel>
+      <kbd className="grid size-6 place-items-center border border-line-bright font-mono text-[0.625rem] text-ink-dim">
+        &larr;
+      </kbd>
+      <kbd className="grid size-6 place-items-center border border-line-bright font-mono text-[0.625rem] text-ink-dim">
+        &rarr;
+      </kbd>
+      <span aria-hidden className="relative h-px w-16 overflow-hidden bg-line">
+        <span className="absolute inset-y-0 left-0 w-6 animate-[travel-hint_2.2s_var(--ease-out-expo)_infinite] bg-signal" />
       </span>
-      <span className="sr-only">Scroll to the about section</span>
-    </a>
+    </div>
   );
 }

@@ -43,15 +43,47 @@ export function Tag({ children, className }: { children: React.ReactNode; classN
 }
 
 /**
- * Consistent section heading: numeric index, rule, title, and optional lede.
- * Every section on the page uses this, which is most of what makes the page
- * feel like one document rather than a stack of blocks.
+ * A section, as one screen of the sideways scroll.
+ *
+ * Panels are laid out as a flex row inside the track, so their width is set by
+ * their content and the reader travels through them left to right.
  */
+export function Panel({
+  id,
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLElement> & { id: string }) {
+  return (
+    <section id={id} className={cn("panel", className)} {...props}>
+      {children}
+    </section>
+  );
+}
+
+/** A column inside a panel. */
+export function Column({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={cn("col", className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
 export interface SectionMeta {
   label: string;
   value: string;
 }
 
+/**
+ * The leading column of a section: its number, name, title, and standfirst,
+ * plus any factual annotations. Reading it is how you know which section you
+ * have just walked into.
+ */
 export function SectionHeading({
   index,
   eyebrow,
@@ -64,35 +96,30 @@ export function SectionHeading({
   eyebrow: string;
   title: React.ReactNode;
   lede?: React.ReactNode;
-  /** Small factual annotations rendered in the outer column on wide screens. */
+  /** Small factual annotations, rendered under the standfirst. */
   meta?: SectionMeta[];
   className?: string;
 }) {
   return (
-    <header
-      className={cn(
-        "grid gap-10 lg:grid-cols-[minmax(0,1fr)_13rem] lg:items-end lg:gap-16",
-        className,
-      )}
-    >
-      <div className="max-w-3xl">
-        <div className="flex items-center gap-4">
-          <MonoLabel className="text-signal">{index}</MonoLabel>
-          <MonoLabel>{eyebrow}</MonoLabel>
-          <hr className="rule flex-1" />
-        </div>
-        <h2 className="mt-6 text-[clamp(2rem,5.2vw,3.5rem)] leading-[1.02] font-semibold">
-          {title}
-        </h2>
-        {lede ? (
-          <p className="mt-5 text-base leading-relaxed text-ink-dim sm:text-lg">{lede}</p>
-        ) : null}
+    <header className={cn("col col-xs flex flex-col", className)}>
+      <div className="flex items-center gap-3">
+        <MonoLabel className="text-signal">{index}</MonoLabel>
+        <MonoLabel>{eyebrow}</MonoLabel>
+        <hr className="rule flex-1" />
       </div>
 
+      <h2 className="mt-5 text-[clamp(1.9rem,3.4vw,2.9rem)] leading-[1.03] font-semibold">
+        {title}
+      </h2>
+
+      {lede ? (
+        <p className="mt-4 text-[0.9375rem] leading-relaxed text-ink-dim">{lede}</p>
+      ) : null}
+
       {meta?.length ? (
-        <dl className="hidden divide-y divide-line border-y border-line lg:block">
+        <dl className="mt-auto divide-y divide-line border-y border-line pt-6">
           {meta.map((item) => (
-            <div key={item.label} className="flex items-baseline justify-between gap-4 py-2.5">
+            <div key={item.label} className="flex items-baseline justify-between gap-4 py-2">
               <dt>
                 <MonoLabel>{item.label}</MonoLabel>
               </dt>
@@ -101,24 +128,13 @@ export function SectionHeading({
           ))}
         </dl>
       ) : null}
-    </header>
-  );
-}
 
-/** Full-width section wrapper with the page's shared rhythm and gutters. */
-export function Section({
-  id,
-  className,
-  children,
-  ...props
-}: React.HTMLAttributes<HTMLElement> & { id: string }) {
-  return (
-    <section
-      id={id}
-      className={cn("relative scroll-mt-24 px-5 py-24 sm:px-8 md:py-32 lg:px-12", className)}
-      {...props}
-    >
-      <div className="mx-auto w-full max-w-[1240px]">{children}</div>
-    </section>
+      {/* Direction of travel — the section header doubles as a signpost. */}
+      <p className="mt-6 flex items-center gap-2 text-ink-faint">
+        <MonoLabel>Keep going</MonoLabel>
+        <span aria-hidden className="h-px flex-1 bg-line" />
+        <span aria-hidden>&rarr;</span>
+      </p>
+    </header>
   );
 }

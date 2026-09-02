@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { site } from "@/content/site";
-import { MonoLabel, Section, StatusDot } from "@/components/ui/primitives";
+import { MonoLabel, Panel, StatusDot } from "@/components/ui/primitives";
 import { Reveal } from "@/components/ui/reveal";
 
 /**
- * The closing screen. One clear action, two links, and no form — a form here
- * would only add a failure mode between someone and an email address.
+ * The last panel. One clear action, two links, and no form — a form here would
+ * only add a failure mode between someone and an email address.
  */
 export function Contact() {
   const [copied, setCopied] = useState(false);
@@ -29,52 +29,26 @@ export function Contact() {
   };
 
   return (
-    <Section id="contact" className="border-t border-line">
-      <Reveal>
-        <div className="flex items-center gap-4">
-          <MonoLabel className="text-signal">08</MonoLabel>
+    <Panel id="contact" className="border-l border-line pr-[max(4rem,12vw)]">
+      <Reveal className="col col-lg">
+        <div className="flex items-center gap-3">
+          <MonoLabel className="text-signal">06</MonoLabel>
           <MonoLabel>Contact</MonoLabel>
           <hr className="rule flex-1" />
         </div>
 
-        <h2 className="mt-8 text-[clamp(2.75rem,10vw,7rem)] leading-[0.94] font-semibold tracking-[-0.045em]">
-          <span className="block text-gradient-ink">Let&apos;s build</span>
+        <h2 className="mt-6 text-[clamp(2.4rem,6vw,4.5rem)] leading-[0.96] font-semibold tracking-[-0.045em]">
+          <span className="text-gradient-ink block">Let&apos;s build</span>
           <span className="block text-signal">something.</span>
         </h2>
 
-        <p className="mt-8 max-w-xl text-base leading-relaxed text-ink-dim sm:text-lg">
+        <p className="mt-6 text-[0.9375rem] leading-relaxed text-ink-dim">
           I&apos;m looking for software, embedded, or systems internships for 2026 and
-          beyond. If you have something that spans more than one layer of the stack, that
-          is the kind of problem I want.
+          beyond. If you have something that spans more than one layer of the stack,
+          that is the kind of problem I want.
         </p>
 
-        <div className="mt-12 grid gap-px border border-line bg-line sm:grid-cols-3">
-          <ContactTile
-            label="Email"
-            value={site.email}
-            href={`mailto:${site.email}`}
-            action={
-              <button
-                type="button"
-                onClick={copyEmail}
-                className="mt-4 self-start border border-line-bright px-2.5 py-1 font-mono text-[0.625rem] tracking-wide text-ink-faint transition-colors duration-200 hover:border-signal hover:text-signal"
-              >
-                {copied ? "Copied" : "Copy address"}
-              </button>
-            }
-          />
-          {site.socials.map((social) => (
-            <ContactTile
-              key={social.label}
-              label={social.label}
-              value={social.handle}
-              href={social.href}
-              external
-            />
-          ))}
-        </div>
-
-        <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
+        <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3">
           <span className="flex items-center gap-2">
             <StatusDot />
             <MonoLabel className="text-live">Open to internships</MonoLabel>
@@ -87,10 +61,44 @@ export function Contact() {
           >
             Download resume
           </a>
-          <MonoLabel>{site.phone}</MonoLabel>
+        </div>
+
+        {/* The colophon, which on a sideways site has nowhere else to live. */}
+        <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-5">
+          <MonoLabel>
+            © {new Date().getFullYear()} {site.name}
+          </MonoLabel>
+          <MonoLabel>{site.location}</MonoLabel>
+          <MonoLabel>Next.js · TypeScript · Tailwind</MonoLabel>
         </div>
       </Reveal>
-    </Section>
+
+      <Reveal delay={0.08} className="col flex flex-col justify-center gap-px bg-line">
+        <ContactTile
+          label="Email"
+          value={site.email}
+          href={`mailto:${site.email}`}
+          action={
+            <button
+              type="button"
+              onClick={copyEmail}
+              className="mt-3 self-start border border-line-bright px-2.5 py-1 font-mono text-[0.625rem] tracking-wide text-ink-faint transition-colors duration-200 hover:border-signal hover:text-signal"
+            >
+              {copied ? "Copied" : "Copy address"}
+            </button>
+          }
+        />
+        {site.socials.map((social) => (
+          <ContactTile
+            key={social.label}
+            label={social.label}
+            value={social.handle}
+            href={social.href}
+            external
+          />
+        ))}
+      </Reveal>
+    </Panel>
   );
 }
 
@@ -108,12 +116,12 @@ function ContactTile({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="group flex flex-col bg-canvas p-6 transition-colors duration-300 hover:bg-panel">
+    <div className="group flex flex-col bg-canvas p-5 transition-colors duration-300 hover:bg-panel">
       <MonoLabel>{label}</MonoLabel>
       <a
         href={href}
         {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-        className="mt-3 inline-flex items-start gap-2 text-[0.9375rem] leading-snug break-all text-ink transition-colors duration-200 group-hover:text-signal"
+        className="mt-2 inline-flex items-start gap-2 text-[0.9375rem] leading-snug break-all text-ink transition-colors duration-200 group-hover:text-signal"
       >
         {value}
         <svg
