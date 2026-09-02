@@ -28,7 +28,8 @@ const STEPS_PER_FRAME = 3;
 const MAX_STEPS = 480;
 const LEARNING_RATE = 1.4;
 
-const toPx = (value: number) => PAD + ((value + DOMAIN) / (2 * DOMAIN)) * (VIEW - PAD * 2);
+const toPx = (value: number) =>
+  PAD + ((value + DOMAIN) / (2 * DOMAIN)) * (VIEW - PAD * 2);
 
 const START_MODEL: LinearModel = { w1: -0.9, w2: 1.4, b: 0.55 };
 
@@ -137,9 +138,12 @@ function ClassifyPanel() {
     setSteps(0);
   }, [stop]);
 
-  useEffect(() => () => {
-    if (frameRef.current) cancelAnimationFrame(frameRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    },
+    [],
+  );
 
   const loss = crossEntropyLoss(model, data);
   const matrix = confusionMatrix(model, data);
@@ -157,7 +161,12 @@ function ClassifyPanel() {
         >
           <defs>
             <clipPath id="ml-clip">
-              <rect x={PAD} y={PAD} width={VIEW - PAD * 2} height={VIEW - PAD * 2} />
+              <rect
+                x={PAD}
+                y={PAD}
+                width={VIEW - PAD * 2}
+                height={VIEW - PAD * 2}
+              />
             </clipPath>
           </defs>
 
@@ -204,7 +213,8 @@ function ClassifyPanel() {
           ) : null}
 
           {data.map((point, index) => {
-            const correct = (predictProbability(model, point) >= 0.5 ? 1 : 0) === point.label;
+            const correct =
+              (predictProbability(model, point) >= 0.5 ? 1 : 0) === point.label;
             return (
               <circle
                 key={index}
@@ -212,7 +222,9 @@ function ClassifyPanel() {
                 cy={VIEW - toPx(point.y)}
                 r={2.6}
                 fill={point.label === 1 ? "var(--color-ink)" : "none"}
-                stroke={correct ? "var(--color-ink-dim)" : "var(--color-signal)"}
+                stroke={
+                  correct ? "var(--color-ink-dim)" : "var(--color-signal)"
+                }
                 strokeWidth={correct ? 0.9 : 1.4}
                 opacity={correct ? 0.8 : 1}
               />
@@ -222,13 +234,21 @@ function ClassifyPanel() {
 
         <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[0.625rem] text-ink-faint">
           <span className="flex items-center gap-1.5">
-            <span aria-hidden className="size-1.5 rounded-full bg-ink" /> class 1
+            <span aria-hidden className="size-1.5 rounded-full bg-ink" /> class
+            1
           </span>
           <span className="flex items-center gap-1.5">
-            <span aria-hidden className="size-1.5 rounded-full border border-ink-dim" /> class 0
+            <span
+              aria-hidden
+              className="size-1.5 rounded-full border border-ink-dim"
+            />{" "}
+            class 0
           </span>
           <span className="flex items-center gap-1.5">
-            <span aria-hidden className="size-1.5 rounded-full border-[1.5px] border-signal" />{" "}
+            <span
+              aria-hidden
+              className="size-1.5 rounded-full border-[1.5px] border-signal"
+            />{" "}
             misclassified
           </span>
         </p>
@@ -236,7 +256,11 @@ function ClassifyPanel() {
 
       <div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button size="sm" variant={running ? "outline" : "signal"} onClick={train}>
+          <Button
+            size="sm"
+            variant={running ? "outline" : "signal"}
+            onClick={train}
+          >
             {running ? "Pause" : steps >= MAX_STEPS ? "Converged" : "Train"}
           </Button>
           <Button size="sm" variant="ghost" onClick={reset}>
@@ -254,67 +278,79 @@ function ClassifyPanel() {
           />
         </div>
 
-        {/* Confusion matrix */}
-        <div className="mt-6">
-          <MonoLabel>Confusion matrix</MonoLabel>
-          <div className="mt-2.5 grid grid-cols-[auto_1fr_1fr] gap-px border border-line bg-line text-center">
-            <span className="bg-panel-2 px-2 py-2" />
-            <span className="bg-panel-2 px-2 py-2 font-mono text-[0.625rem] text-ink-faint">
-              pred 1
-            </span>
-            <span className="bg-panel-2 px-2 py-2 font-mono text-[0.625rem] text-ink-faint">
-              pred 0
-            </span>
+        {/* The matrix and the scores it produces read as one unit, and side by
+            side they cost half the height of a stack. */}
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 sm:items-start">
+          <div>
+            <MonoLabel>Confusion matrix</MonoLabel>
+            <div className="mt-2.5 grid grid-cols-[auto_1fr_1fr] gap-px border border-line bg-line text-center">
+              <span className="bg-panel-2 px-2 py-2" />
+              <span className="bg-panel-2 px-2 py-2 font-mono text-[0.625rem] text-ink-faint">
+                pred 1
+              </span>
+              <span className="bg-panel-2 px-2 py-2 font-mono text-[0.625rem] text-ink-faint">
+                pred 0
+              </span>
 
-            <span className="bg-panel-2 px-2 py-3 font-mono text-[0.625rem] text-ink-faint">
-              act 1
-            </span>
-            <MatrixCell value={matrix.truePositive} good />
-            <MatrixCell value={matrix.falseNegative} />
+              <span className="bg-panel-2 px-2 py-3 font-mono text-[0.625rem] text-ink-faint">
+                act 1
+              </span>
+              <MatrixCell value={matrix.truePositive} good />
+              <MatrixCell value={matrix.falseNegative} />
 
-            <span className="bg-panel-2 px-2 py-3 font-mono text-[0.625rem] text-ink-faint">
-              act 0
-            </span>
-            <MatrixCell value={matrix.falsePositive} />
-            <MatrixCell value={matrix.trueNegative} good />
+              <span className="bg-panel-2 px-2 py-3 font-mono text-[0.625rem] text-ink-faint">
+                act 0
+              </span>
+              <MatrixCell value={matrix.falsePositive} />
+              <MatrixCell value={matrix.trueNegative} good />
+            </div>
           </div>
-        </div>
 
-        <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
-          {[
-            { label: "Accuracy", value: metrics.accuracy },
-            { label: "Precision", value: metrics.precision },
-            { label: "Recall", value: metrics.recall },
-            { label: "F1", value: metrics.f1 },
-          ].map((metric) => (
-            <div key={metric.label}>
+          <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 sm:mt-0">
+            {[
+              { label: "Accuracy", value: metrics.accuracy },
+              { label: "Precision", value: metrics.precision },
+              { label: "Recall", value: metrics.recall },
+              { label: "F1", value: metrics.f1 },
+            ].map((metric) => (
+              <div key={metric.label}>
+                <dt>
+                  <MonoLabel>{metric.label}</MonoLabel>
+                </dt>
+                <dd className="mt-1 font-mono text-sm text-ink tabular-nums">
+                  {metric.value.toFixed(3)}
+                </dd>
+              </div>
+            ))}
+            <div>
               <dt>
-                <MonoLabel>{metric.label}</MonoLabel>
+                <MonoLabel>Loss</MonoLabel>
               </dt>
-              <dd className="mt-1 font-mono text-sm text-ink tabular-nums">
-                {metric.value.toFixed(3)}
+              <dd className="mt-1 font-mono text-sm text-signal tabular-nums">
+                {loss.toFixed(4)}
               </dd>
             </div>
-          ))}
-          <div>
-            <dt>
-              <MonoLabel>Loss</MonoLabel>
-            </dt>
-            <dd className="mt-1 font-mono text-sm text-signal tabular-nums">{loss.toFixed(4)}</dd>
-          </div>
-        </dl>
+          </dl>
+        </div>
 
         <p className="mt-4 text-[0.6875rem] leading-relaxed text-ink-faint">
-          Logistic regression, batch gradient descent on cross-entropy loss, learning rate{" "}
-          {LEARNING_RATE}. The classes overlap on purpose — a dataset that separates
-          perfectly makes precision and recall meaningless.
+          Logistic regression, batch gradient descent on cross-entropy loss,
+          learning rate {LEARNING_RATE}. The classes overlap on purpose — a
+          dataset that separates perfectly makes precision and recall
+          meaningless.
         </p>
       </div>
     </div>
   );
 }
 
-function MatrixCell({ value, good = false }: { value: number; good?: boolean }) {
+function MatrixCell({
+  value,
+  good = false,
+}: {
+  value: number;
+  good?: boolean;
+}) {
   return (
     <span
       className={cn(
@@ -329,17 +365,28 @@ function MatrixCell({ value, good = false }: { value: number; good?: boolean }) 
 
 /* -------------------------------- clustering ------------------------------- */
 
-const CLUSTER_COLORS = ["var(--color-signal)", "var(--color-live)", "var(--color-ink-dim)"];
+const CLUSTER_COLORS = [
+  "var(--color-signal)",
+  "var(--color-live)",
+  "var(--color-ink-dim)",
+];
 
 function ClusterPanel() {
   const points = useMemo(() => makeClusterSet(), []);
-  const [centroids, setCentroids] = useState<Centroid[]>(() => initialCentroids());
+  const [centroids, setCentroids] = useState<Centroid[]>(() =>
+    initialCentroids(),
+  );
   const [iteration, setIteration] = useState(0);
 
-  const assignments = useMemo(() => assignClusters(points, centroids), [points, centroids]);
+  const assignments = useMemo(
+    () => assignClusters(points, centroids),
+    [points, centroids],
+  );
 
   const step = () => {
-    setCentroids((current) => updateCentroids(points, assignClusters(points, current), current));
+    setCentroids((current) =>
+      updateCentroids(points, assignClusters(points, current), current),
+    );
     setIteration((value) => value + 1);
   };
 
@@ -426,7 +473,9 @@ function ClusterPanel() {
           <Button size="sm" variant="ghost" onClick={reset}>
             Reset
           </Button>
-          <MonoLabel className="ml-auto">iter {String(iteration).padStart(2, "0")}</MonoLabel>
+          <MonoLabel className="ml-auto">
+            iter {String(iteration).padStart(2, "0")}
+          </MonoLabel>
         </div>
 
         <dl className="mt-6 space-y-4">
@@ -447,10 +496,11 @@ function ClusterPanel() {
         </dl>
 
         <p className="mt-5 text-[0.6875rem] leading-relaxed text-ink-faint">
-          Lloyd&apos;s algorithm, one iteration per press: assign every point to its nearest
-          centroid, then move each centroid to the mean of its members. The centroids start
-          badly placed so the first few moves are worth watching, and the inertia falls
-          monotonically until it stops changing.
+          Lloyd&apos;s algorithm, one iteration per press: assign every point to
+          its nearest centroid, then move each centroid to the mean of its
+          members. The centroids start badly placed so the first few moves are
+          worth watching, and the inertia falls monotonically until it stops
+          changing.
         </p>
       </div>
     </div>

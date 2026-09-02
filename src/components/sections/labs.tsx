@@ -1,5 +1,10 @@
 import { skillGroups } from "@/content/skills";
-import { MonoLabel, Panel, SectionHeading, Tag } from "@/components/ui/primitives";
+import {
+  MonoLabel,
+  Panel,
+  SectionHeading,
+  Tag,
+} from "@/components/ui/primitives";
 import { Reveal } from "@/components/ui/reveal";
 import { BodePlot } from "@/components/visuals/bode-plot";
 import { MlLab } from "@/components/visuals/ml-lab";
@@ -68,7 +73,10 @@ function LabPanel({
 }) {
   return (
     <>
-      <Reveal className="col col-xs border-l border-line pl-8">
+      {/* Wider than a reading column on purpose: these topic lists run to
+          fifteen-odd tags, and at column width they wrapped into a stack taller
+          than the instrument beside them. */}
+      <Reveal className="col col-md border-l border-line pl-8">
         <div className="flex items-center gap-3">
           <MonoLabel className="text-signal">{index}</MonoLabel>
           <MonoLabel>{caption}</MonoLabel>
@@ -76,7 +84,9 @@ function LabPanel({
         <h3 className="mt-3 text-[clamp(1.5rem,2.6vw,2rem)] leading-tight font-semibold">
           {title}
         </h3>
-        <p className="mt-3 text-[0.875rem] leading-relaxed text-ink-dim">{description}</p>
+        <p className="mt-3 text-[0.875rem] leading-relaxed text-ink-dim">
+          {description}
+        </p>
         <ul className="mt-5 flex flex-wrap gap-1.5">
           {topics.map((topic) => (
             <li key={topic}>
@@ -86,7 +96,7 @@ function LabPanel({
         </ul>
       </Reveal>
 
-      <Reveal delay={0.06} className="col col-xl">
+      <Reveal delay={0.06} className="col col-2xl">
         <div className="border border-line bg-panel p-5 sm:p-6">{children}</div>
       </Reveal>
     </>

@@ -2,7 +2,13 @@
 
 import { useId, useMemo, useState } from "react";
 import { MonoLabel } from "@/components/ui/primitives";
-import { evaluateFilter, formatOhms, logSweep, rcFromCutoff, type FilterKind } from "@/lib/signal";
+import {
+  evaluateFilter,
+  formatOhms,
+  logSweep,
+  rcFromCutoff,
+  type FilterKind,
+} from "@/lib/signal";
 import { cn, formatHz } from "@/lib/utils";
 
 const F_MIN = 10;
@@ -19,8 +25,10 @@ const PLOT_H = H - PAD.top - PAD.bottom;
 const LOG_MIN = Math.log10(F_MIN);
 const LOG_MAX = Math.log10(F_MAX);
 
-const xFor = (hz: number) => PAD.left + ((Math.log10(hz) - LOG_MIN) / (LOG_MAX - LOG_MIN)) * PLOT_W;
-const yForDb = (db: number) => PAD.top + ((DB_MAX - db) / (DB_MAX - DB_MIN)) * PLOT_H;
+const xFor = (hz: number) =>
+  PAD.left + ((Math.log10(hz) - LOG_MIN) / (LOG_MAX - LOG_MIN)) * PLOT_W;
+const yForDb = (db: number) =>
+  PAD.top + ((DB_MAX - db) / (DB_MAX - DB_MIN)) * PLOT_H;
 const yForPhase = (deg: number) => PAD.top + ((90 - deg) / 180) * PLOT_H;
 
 const decades = [10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000];
@@ -55,11 +63,16 @@ export function BodePlot() {
 
     const toPath = (mapper: (index: number) => number) =>
       points
-        .map((hz, index) => `${index === 0 ? "M" : "L"} ${xFor(hz).toFixed(2)} ${mapper(index).toFixed(2)}`)
+        .map(
+          (hz, index) =>
+            `${index === 0 ? "M" : "L"} ${xFor(hz).toFixed(2)} ${mapper(index).toFixed(2)}`,
+        )
         .join(" ");
 
     return {
-      magnitudePath: toPath((i) => yForDb(Math.max(responses[i].magnitudeDb, DB_MIN - 4))),
+      magnitudePath: toPath((i) =>
+        yForDb(Math.max(responses[i].magnitudeDb, DB_MIN - 4)),
+      ),
       phasePath: toPath((i) => yForPhase(responses[i].phaseDeg)),
       cutoffDb: evaluateFilter(kind, cutoff, cutoff, q).magnitudeDb,
     };
@@ -101,137 +114,176 @@ export function BodePlot() {
         </button>
       </div>
 
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        className="h-auto w-full"
-        role="img"
-        aria-label={`Bode magnitude plot for a ${kind} filter with a cutoff at ${formatHz(cutoff)}. Magnitude at the cutoff is ${cutoffDb.toFixed(1)} decibels.`}
-      >
-        {/* Decade grid */}
-        <g stroke="var(--color-line)" strokeWidth="0.75">
-          {decades.map((hz) => (
-            <line key={hz} x1={xFor(hz)} y1={PAD.top} x2={xFor(hz)} y2={PAD.top + PLOT_H} />
-          ))}
-          {dbLines.map((db) => (
-            <line
-              key={db}
-              x1={PAD.left}
-              y1={yForDb(db)}
-              x2={PAD.left + PLOT_W}
-              y2={yForDb(db)}
-              strokeDasharray={db === 0 ? undefined : "2 4"}
-            />
-          ))}
-        </g>
+      {/* The plot and its instrument rail sit side by side rather than stacked.
+          Stacked, the curve scaled with the column width and the whole thing
+          grew taller than the section had room for. */}
+      <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,13.5rem)] sm:items-start">
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          className="h-auto w-full"
+          role="img"
+          aria-label={`Bode magnitude plot for a ${kind} filter with a cutoff at ${formatHz(cutoff)}. Magnitude at the cutoff is ${cutoffDb.toFixed(1)} decibels.`}
+        >
+          {/* Decade grid */}
+          <g stroke="var(--color-line)" strokeWidth="0.75">
+            {decades.map((hz) => (
+              <line
+                key={hz}
+                x1={xFor(hz)}
+                y1={PAD.top}
+                x2={xFor(hz)}
+                y2={PAD.top + PLOT_H}
+              />
+            ))}
+            {dbLines.map((db) => (
+              <line
+                key={db}
+                x1={PAD.left}
+                y1={yForDb(db)}
+                x2={PAD.left + PLOT_W}
+                y2={yForDb(db)}
+                strokeDasharray={db === 0 ? undefined : "2 4"}
+              />
+            ))}
+          </g>
 
-        {/* −3 dB reference */}
-        <line
-          x1={PAD.left}
-          y1={yForDb(-3)}
-          x2={PAD.left + PLOT_W}
-          y2={yForDb(-3)}
-          stroke="var(--color-line-bright)"
-          strokeWidth="0.75"
-          strokeDasharray="1 3"
-        />
-        <text x={PAD.left + PLOT_W + 4} y={yForDb(-3) + 3} fontSize="7" fill="var(--color-ink-faint)">
-          −3
-        </text>
+          {/* −3 dB reference */}
+          <line
+            x1={PAD.left}
+            y1={yForDb(-3)}
+            x2={PAD.left + PLOT_W}
+            y2={yForDb(-3)}
+            stroke="var(--color-line-bright)"
+            strokeWidth="0.75"
+            strokeDasharray="1 3"
+          />
+          <text
+            x={PAD.left + PLOT_W + 4}
+            y={yForDb(-3) + 3}
+            fontSize="7"
+            fill="var(--color-ink-faint)"
+          >
+            −3
+          </text>
 
-        {/* Cutoff marker */}
-        <line
-          x1={xFor(cutoff)}
-          y1={PAD.top}
-          x2={xFor(cutoff)}
-          y2={PAD.top + PLOT_H}
-          stroke="var(--color-signal)"
-          strokeWidth="1"
-          strokeDasharray="3 3"
-          opacity="0.7"
-        />
-        <circle cx={xFor(cutoff)} cy={yForDb(cutoffDb)} r="3" fill="var(--color-signal)" />
-
-        {showPhase ? (
-          <path
-            d={phasePath}
-            fill="none"
-            stroke="var(--color-ink-faint)"
+          {/* Cutoff marker */}
+          <line
+            x1={xFor(cutoff)}
+            y1={PAD.top}
+            x2={xFor(cutoff)}
+            y2={PAD.top + PLOT_H}
+            stroke="var(--color-signal)"
             strokeWidth="1"
             strokeDasharray="3 3"
+            opacity="0.7"
+          />
+          <circle
+            cx={xFor(cutoff)}
+            cy={yForDb(cutoffDb)}
+            r="3"
+            fill="var(--color-signal)"
+          />
+
+          {showPhase ? (
+            <path
+              d={phasePath}
+              fill="none"
+              stroke="var(--color-ink-faint)"
+              strokeWidth="1"
+              strokeDasharray="3 3"
+              vectorEffect="non-scaling-stroke"
+            />
+          ) : null}
+
+          <path
+            d={magnitudePath}
+            fill="none"
+            stroke="var(--color-signal)"
+            strokeWidth="1.75"
+            strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
           />
-        ) : null}
 
-        <path
-          d={magnitudePath}
-          fill="none"
-          stroke="var(--color-signal)"
-          strokeWidth="1.75"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
-        />
-
-        {/* Axes */}
-        <g fontSize="7" fill="var(--color-ink-faint)">
-          {decades.map((hz) => (
-            <text key={hz} x={xFor(hz)} y={H - 10} textAnchor="middle">
-              {formatHz(hz)}
+          {/* Axes */}
+          <g fontSize="7" fill="var(--color-ink-faint)">
+            {decades.map((hz) => (
+              <text key={hz} x={xFor(hz)} y={H - 10} textAnchor="middle">
+                {formatHz(hz)}
+              </text>
+            ))}
+            {dbLines.map((db) => (
+              <text
+                key={db}
+                x={PAD.left - 6}
+                y={yForDb(db) + 3}
+                textAnchor="end"
+              >
+                {db}
+              </text>
+            ))}
+            <text x={PAD.left - 6} y={PAD.top + 6} textAnchor="end">
+              dB
             </text>
-          ))}
-          {dbLines.map((db) => (
-            <text key={db} x={PAD.left - 6} y={yForDb(db) + 3} textAnchor="end">
-              {db}
-            </text>
-          ))}
-          <text x={PAD.left - 6} y={PAD.top + 6} textAnchor="end">
-            dB
-          </text>
-        </g>
-      </svg>
+          </g>
+        </svg>
 
-      <div className="mt-3">
-        <label htmlFor={sliderId} className="label-mono">
-          Cutoff frequency{" "}
-          <span className="text-signal normal-case">{formatHz(cutoff)}</span>
-        </label>
-        <input
-          id={sliderId}
-          type="range"
-          min={2}
-          max={5}
-          step={0.01}
-          value={cutoffExponent}
-          onChange={(event) => setCutoffExponent(Number(event.target.value))}
-          className="mt-2 h-1 w-full cursor-pointer appearance-none rounded-full bg-line accent-[var(--color-signal)] outline-offset-4"
-        />
-      </div>
-
-      <dl className="mt-4 grid grid-cols-4 gap-3 border-t border-line pt-3">
-        {[
-          { label: "R", value: formatOhms(resistanceOhms) },
-          { label: "C", value: `${(capacitanceFarads * 1e9).toFixed(0)} nF` },
-          { label: "Q", value: q.toFixed(2) },
-          {
-            label: "|H| at fc",
-            value: `${cutoffDb.toFixed(1)} dB`,
-          },
-        ].map((item) => (
-          <div key={item.label}>
-            <dt>
-              <MonoLabel>{item.label}</MonoLabel>
-            </dt>
-            <dd className="mt-1.5 font-mono text-sm text-ink">{item.value}</dd>
+        <div className="sm:mt-0">
+          <div>
+            <label htmlFor={sliderId} className="label-mono">
+              Cutoff frequency{" "}
+              <span className="text-signal normal-case">
+                {formatHz(cutoff)}
+              </span>
+            </label>
+            <input
+              id={sliderId}
+              type="range"
+              min={2}
+              max={5}
+              step={0.01}
+              value={cutoffExponent}
+              onChange={(event) =>
+                setCutoffExponent(Number(event.target.value))
+              }
+              className="mt-2 h-1 w-full cursor-pointer appearance-none rounded-full bg-line accent-[var(--color-signal)] outline-offset-4"
+            />
           </div>
-        ))}
-      </dl>
+
+          <dl className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2.5 border-t border-line pt-3">
+            {[
+              { label: "R", value: formatOhms(resistanceOhms) },
+              {
+                label: "C",
+                value: `${(capacitanceFarads * 1e9).toFixed(0)} nF`,
+              },
+              { label: "Q", value: q.toFixed(2) },
+              {
+                label: "|H| at fc",
+                value: `${cutoffDb.toFixed(1)} dB`,
+              },
+            ].map((item) => (
+              <div key={item.label}>
+                <dt>
+                  <MonoLabel>{item.label}</MonoLabel>
+                </dt>
+                <dd className="mt-1.5 font-mono text-sm text-ink">
+                  {item.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
 
       <p className="mt-3 text-[0.6875rem] leading-relaxed text-ink-faint">
         Component values solved from{" "}
         <span className="text-ink-dim">fc = 1 / (2πRC)</span> for a{" "}
-        {(capacitanceFarads * 1e9).toFixed(0)} nF capacitor — the curve is evaluated from
-        the transfer function, not traced. A decade past the cutoff the response is{" "}
+        {(capacitanceFarads * 1e9).toFixed(0)} nF capacitor — the curve is
+        evaluated from the transfer function, not traced. A decade past the
+        cutoff the response is{" "}
         <span className="text-ink-dim">
-          {evaluateFilter(kind, cutoff * 10, cutoff, q).magnitudeDb.toFixed(1)} dB
+          {evaluateFilter(kind, cutoff * 10, cutoff, q).magnitudeDb.toFixed(1)}{" "}
+          dB
         </span>
         .
       </p>

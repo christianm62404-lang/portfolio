@@ -9,13 +9,12 @@ export const experience: ExperienceRole[] = [
     period: "Feb 2026 — Present",
     current: true,
     summary:
-      "Building enterprise software and AI-driven web applications alongside the engineering team, across both the retail management platform and the proposal management platform.",
+      "Enterprise software and AI-driven web applications alongside the engineering team, across both the retail management and proposal management platforms.",
     highlights: [
-      "Lead the front-end track on BidOps AI: application shell, authentication flows, and the proposal workspace.",
-      "Work on the CRM and customer-service side of the Dragon POS platform, including a tenant-aware customer profile service.",
-      "Identified and helped close authentication and access-control gaps rather than only shipping features.",
-      "Create and organise development tasks in an Agile environment, coordinating with a cross-functional team.",
-      "Take part in debugging, testing, and code review as a routine part of the work.",
+      "Lead the front-end track on BidOps AI: application shell, auth flows, and the proposal workspace.",
+      "Work the CRM side of the Dragon POS platform, including a tenant-aware customer profile service.",
+      "Identified and helped close authentication and access-control gaps, not only shipped features.",
+      "Organise work in an Agile team, with debugging, testing, and code review as routine.",
     ],
     stack: ["TypeScript", "React", "Next.js", "NestJS", "PostgreSQL", "REST APIs", "Supabase Auth", "RBAC"],
   },

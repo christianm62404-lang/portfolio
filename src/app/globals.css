@@ -115,9 +115,9 @@
      the track and the world strip over the bottom, so panels reserve room for
      both rather than sitting under them. */
   --header-h: 4.5rem;
-  --world-h: 14rem;
-  --ground-offset: 3.25rem;
-  --character-h: 11rem;
+  --world-h: 11rem;
+  --ground-offset: 2.5rem;
+  --character-h: 9rem;
 
   /* Slow enough to read as a deliberate change of state. The fade is the
      fallback for browsers without view transitions; the wipe is the headline. */
@@ -192,13 +192,53 @@
   --aura-magenta: light-dark(rgb(214 72 178 / 0.13), rgb(226 92 200 / 0.24));
 }
 
-/* On a short or narrow viewport the world has to give room back to the
-   content it sits under. */
-@media (max-height: 760px), (max-width: 900px) {
+/* The world sits under the content, so on anything but a tall window it has to
+   give height back rather than push a section into scrolling. Three tiers, each
+   keeping the character in proportion with the ground he walks on. */
+/* Everything below is sized in rem, so easing the root size down on a short
+   window scales the whole layout — type, spacing, the world strip — instead of
+   letting one section outgrow its frame. Percentages rather than pixels, so a
+   reader who has raised their browser's default font size keeps that increase. */
+@media (max-height: 880px) {
+  :root {
+    font-size: 96%;
+  }
+}
+
+@media (max-height: 780px) {
+  :root {
+    font-size: 91%;
+  }
+}
+
+@media (max-height: 700px) {
+  :root {
+    font-size: 88%;
+  }
+}
+
+@media (max-height: 920px) {
   :root {
     --world-h: 9.5rem;
     --ground-offset: 2rem;
-    --character-h: 7rem;
+    --character-h: 7.75rem;
+  }
+}
+
+@media (max-height: 820px), (max-width: 900px) {
+  :root {
+    --world-h: 8rem;
+    --ground-offset: 1.5rem;
+    --character-h: 6.5rem;
+  }
+}
+
+@media (max-height: 700px) {
+  :root {
+    --header-h: 3.75rem;
+    --world-h: 7rem;
+    --ground-offset: 1.25rem;
+    --character-h: 5.75rem;
   }
 }
 
@@ -333,7 +373,7 @@
     height: 100%;
     display: flex;
     align-items: stretch;
-    padding-block: calc(var(--header-h) + 1.75rem) calc(var(--world-h) + 1.75rem);
+    padding-block: calc(var(--header-h) + 1.25rem) calc(var(--world-h) + 1.25rem);
     padding-inline: clamp(1rem, 2.6vw, 3.25rem);
   }
 
@@ -346,7 +386,7 @@
     gap: clamp(2.5rem, 5vw, 6.5rem);
     height: 100%;
     padding-inline: clamp(1.75rem, 3.4vw, 3.75rem);
-    padding-block: clamp(1.5rem, 3vw, 2.75rem);
+    padding-block: clamp(1.1rem, 2vw, 1.75rem);
     border: 1px solid var(--color-line-bright);
     border-radius: 3px;
     background: color-mix(in oklab, var(--color-panel) 66%, transparent);

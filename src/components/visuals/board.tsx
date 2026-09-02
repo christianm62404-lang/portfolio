@@ -164,13 +164,13 @@ export function BoardVisual() {
       </svg>
 
       {/* Instrument strip */}
-      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
+      <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto]">
         <div className="border border-line bg-canvas px-3 py-2.5">
           <div className="flex items-baseline justify-between">
             <MonoLabel>PWM · P1.0</MonoLabel>
             <span className="font-mono text-[0.6875rem] text-signal">{dutyPercent}% duty</span>
           </div>
-          <svg viewBox="0 0 300 44" className="mt-2 h-11 w-full" aria-hidden>
+          <svg viewBox="0 0 300 44" className="mt-2 h-8 w-full" aria-hidden>
             <path d="M0 22 H300" stroke="var(--color-line)" strokeWidth="0.75" strokeDasharray="2 3" />
             <path
               d={wave}

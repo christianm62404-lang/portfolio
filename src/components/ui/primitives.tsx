@@ -108,18 +108,18 @@ export function SectionHeading({
         <hr className="rule flex-1" />
       </div>
 
-      <h2 className="mt-5 text-[clamp(1.9rem,3.4vw,2.9rem)] leading-[1.03] font-semibold">
+      <h2 className="mt-4 text-[clamp(1.7rem,2.9vw,2.4rem)] leading-[1.05] font-semibold">
         {title}
       </h2>
 
       {lede ? (
-        <p className="mt-4 text-[0.9375rem] leading-relaxed text-ink-dim">{lede}</p>
+        <p className="mt-3.5 text-[0.875rem] leading-[1.6] text-ink-dim">{lede}</p>
       ) : null}
 
       {meta?.length ? (
-        <dl className="mt-auto divide-y divide-line border-y border-line pt-6">
+        <dl className="mt-auto divide-y divide-line border-y border-line pt-5">
           {meta.map((item) => (
-            <div key={item.label} className="flex items-baseline justify-between gap-4 py-2">
+            <div key={item.label} className="flex items-baseline justify-between gap-4 py-1.5">
               <dt>
                 <MonoLabel>{item.label}</MonoLabel>
               </dt>
@@ -130,7 +130,7 @@ export function SectionHeading({
       ) : null}
 
       {/* Direction of travel — the section header doubles as a signpost. */}
-      <p className="mt-6 flex items-center gap-2 text-ink-faint">
+      <p className="mt-5 flex items-center gap-2 text-ink-faint">
         <MonoLabel>Keep going</MonoLabel>
         <span aria-hidden className="h-px flex-1 bg-line" />
         <span aria-hidden>&rarr;</span>
