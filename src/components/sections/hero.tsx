@@ -70,94 +70,106 @@ export function Hero({ portraitSrc }: { portraitSrc: string | null }) {
   }, [interactive, pointerX, pointerY]);
 
   return (
-    <section ref={containerRef} id="home" className="panel relative overflow-hidden">
-      <motion.div
-        aria-hidden
-        className="grid-field pointer-events-none absolute -inset-24 opacity-[0.55]"
-        style={interactive ? { x: gridX, y: gridY } : undefined}
-      />
-      <div
-        aria-hidden
-        className={cn("pointer-events-none absolute inset-0", !interactive && "signal-wash")}
-      >
-        {interactive ? (
+    <section ref={containerRef} id="home" className="panel">
+      <div className="frame relative">
+        {/* The decoration is clipped here rather than on the frame itself: on a
+            narrow screen the frame is what scrolls, and a frame that hides its
+            own overflow would swallow everything below the fold. */}
+        <div
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute inset-0 overflow-hidden",
+            !interactive && "signal-wash",
+          )}
+        >
           <motion.div
-            className="signal-field absolute size-[52rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{ left: glowX, top: glowY }}
+            className="grid-field absolute -inset-24 opacity-[0.55]"
+            style={interactive ? { x: gridX, y: gridY } : undefined}
           />
-        ) : null}
-      </div>
+          {interactive ? (
+            <motion.div
+              className="signal-field absolute size-[52rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
+              style={{ left: glowX, top: glowY }}
+            />
+          ) : null}
+        </div>
 
-      {/* The face is the thing worth meeting first. */}
-      <motion.div
-        initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className="col col-sm relative"
-        style={
-          interactive
-            ? { rotateY: tiltY, rotateX: tiltX, transformPerspective: 1200 }
-            : undefined
-        }
-      >
-        <Portrait src={portraitSrc} priority />
-      </motion.div>
-
-      <div className="col col-lg relative">
+        {/* The face is the thing worth meeting first. */}
         <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-wrap items-center gap-x-5 gap-y-2"
+          initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="col col-sm relative"
+          style={
+            interactive
+              ? { rotateY: tiltY, rotateX: tiltX, transformPerspective: 1200 }
+              : undefined
+          }
         >
-          <span className="flex items-center gap-2">
-            <StatusDot />
-            <MonoLabel>{site.location}</MonoLabel>
-          </span>
-          <span className="hidden h-3 w-px bg-line sm:block" />
-          <MonoLabel>Computer Engineering · UCF · &apos;27</MonoLabel>
+          <Portrait src={portraitSrc} priority />
         </motion.div>
 
-        <motion.h1
-          initial={reduceMotion ? false : { opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.85, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
-          className="text-gradient-ink mt-5 text-[clamp(2.4rem,5.6vw,4.25rem)] leading-[0.95] font-semibold tracking-[-0.045em]"
-        >
-          {site.name}
-        </motion.h1>
-
-        <motion.p
-          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-5 text-base leading-relaxed text-ink-dim sm:text-lg"
-        >
-          A computer engineering student who works from transistors up to cloud
-          services, and finds the same question interesting at every level.
-        </motion.p>
-
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.26, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-8 flex flex-wrap items-center gap-3"
-        >
-          <ButtonLink href="#work" variant="primary" size="md">
-            See the work
-          </ButtonLink>
-          <ButtonLink
-            href={site.resumePath}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="outline"
-            size="md"
+        <div className="col col-lg relative">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-wrap items-center gap-x-5 gap-y-2"
           >
-            Resume
-          </ButtonLink>
-        </motion.div>
+            <span className="flex items-center gap-2">
+              <StatusDot />
+              <MonoLabel>{site.location}</MonoLabel>
+            </span>
+            <span className="hidden h-3 w-px bg-line sm:block" />
+            <MonoLabel>Computer Engineering · UCF · &apos;27</MonoLabel>
+          </motion.div>
 
-        <TravelCue />
+          <motion.h1
+            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.85,
+              delay: 0.14,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="text-gradient-ink mt-5 text-[clamp(2.4rem,5.6vw,4.25rem)] leading-[0.95] font-semibold tracking-[-0.045em]"
+          >
+            {site.name}
+          </motion.h1>
+
+          <motion.p
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-5 text-base leading-relaxed text-ink-dim sm:text-lg"
+          >
+            A computer engineering student who works from transistors up to
+            cloud services, and finds the same question interesting at every
+            level.
+          </motion.p>
+
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.26, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-8 flex flex-wrap items-center gap-3"
+          >
+            <ButtonLink href="#work" variant="primary" size="md">
+              See the work
+            </ButtonLink>
+            <ButtonLink
+              href={site.resumePath}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outline"
+              size="md"
+            >
+              Resume
+            </ButtonLink>
+          </motion.div>
+
+          <TravelCue />
+        </div>
       </div>
     </section>
   );

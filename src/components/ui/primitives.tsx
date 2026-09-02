@@ -56,7 +56,7 @@ export function Panel({
 }: React.HTMLAttributes<HTMLElement> & { id: string }) {
   return (
     <section id={id} className={cn("panel", className)} {...props}>
-      {children}
+      <div className="frame">{children}</div>
     </section>
   );
 }

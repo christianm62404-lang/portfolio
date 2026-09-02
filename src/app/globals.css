@@ -324,16 +324,36 @@
     overscroll-behavior-x: contain;
   }
 
-  /* One screen of the site. Width comes from the columns inside it; the height
-     is fixed, and content is inset from the header and the world strip. */
+  /* One screen of the site.
+     The panel is only a spacer: its inline padding is what opens the gap
+     between one framed section and the next, so the character has clear
+     ground to walk along between them. */
   .panel {
     flex: 0 0 auto;
     height: 100%;
     display: flex;
+    align-items: stretch;
+    padding-block: calc(var(--header-h) + 1.75rem) calc(var(--world-h) + 1.75rem);
+    padding-inline: clamp(1rem, 2.6vw, 3.25rem);
+  }
+
+  /* The section itself, as a lit room the character walks past.
+     Translucent rather than solid so the aura behind still shows through, and
+     blurred so text sits on something calm whatever colour it lands over. */
+  .frame {
+    display: flex;
     align-items: center;
-    gap: clamp(2.75rem, 5.5vw, 7rem);
-    padding-block: calc(var(--header-h) + 2.25rem) calc(var(--world-h) + 1.25rem);
-    padding-inline: clamp(1.5rem, 5vw, 6rem);
+    gap: clamp(2.5rem, 5vw, 6.5rem);
+    height: 100%;
+    padding-inline: clamp(1.75rem, 3.4vw, 3.75rem);
+    padding-block: clamp(1.5rem, 3vw, 2.75rem);
+    border: 1px solid var(--color-line-bright);
+    border-radius: 3px;
+    background: color-mix(in oklab, var(--color-panel) 66%, transparent);
+    backdrop-filter: blur(7px);
+    box-shadow:
+      0 1px 0 0 color-mix(in oklab, white 4%, transparent) inset,
+      0 24px 70px -40px rgb(0 0 0 / 0.85);
   }
 
   /* A column within a panel — the unit the reader actually moves through.
@@ -373,13 +393,19 @@
   @media (max-width: 900px) {
     .panel {
       width: 100vw;
+      padding-block: calc(var(--header-h) + 0.75rem) calc(var(--world-h) + 0.75rem);
+      padding-inline: 0.75rem;
+    }
+    .frame {
       flex-direction: column;
       align-items: stretch;
       justify-content: flex-start;
       gap: 2.25rem;
+      width: 100%;
       overflow-y: auto;
       overscroll-behavior-y: contain;
-      padding-block: calc(var(--header-h) + 1rem) calc(var(--world-h) + 1rem);
+      padding-inline: 1.25rem;
+      padding-block: 1.5rem;
     }
     .col,
     .col-xs,

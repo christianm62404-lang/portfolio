@@ -15,7 +15,7 @@ const ml = skillGroups.find((group) => group.id === "ml");
  */
 export function Labs() {
   return (
-    <Panel id="labs" className="border-l border-line">
+    <Panel id="labs">
       <SectionHeading
         index="03"
         eyebrow="Lab"

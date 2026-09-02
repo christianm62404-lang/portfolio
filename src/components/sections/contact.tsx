@@ -29,7 +29,7 @@ export function Contact() {
   };
 
   return (
-    <Panel id="contact" className="border-l border-line pr-[max(4rem,12vw)]">
+    <Panel id="contact">
       <Reveal className="col col-lg">
         <div className="flex items-center gap-3">
           <MonoLabel className="text-signal">06</MonoLabel>

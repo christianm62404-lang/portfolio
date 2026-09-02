@@ -5,7 +5,7 @@ import { Reveal } from "@/components/ui/reveal";
 /** Roles as columns, read left to right in the order they happened. */
 export function Experience() {
   return (
-    <Panel id="experience" className="border-l border-line">
+    <Panel id="experience">
       <SectionHeading
         index="05"
         eyebrow="Experience"

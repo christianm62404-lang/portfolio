@@ -13,7 +13,7 @@ const facts = [
 
 export function About() {
   return (
-    <Panel id="about" className="border-l border-line">
+    <Panel id="about">
       <SectionHeading
         index="01"
         eyebrow="About"

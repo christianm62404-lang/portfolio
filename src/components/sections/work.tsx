@@ -4,7 +4,7 @@ import { ProjectCard } from "@/components/projects/project-card";
 
 export function Work() {
   return (
-    <Panel id="work" className="border-l border-line">
+    <Panel id="work">
       <SectionHeading
         index="02"
         eyebrow="Selected work"

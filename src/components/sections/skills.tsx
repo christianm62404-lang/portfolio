@@ -46,7 +46,7 @@ export function Skills() {
   };
 
   return (
-    <Panel id="skills" className="border-l border-line">
+    <Panel id="skills">
       <SectionHeading
         index="04"
         eyebrow="Skills"
