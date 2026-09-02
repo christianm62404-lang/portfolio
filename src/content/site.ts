@@ -8,10 +8,11 @@ export const site = {
   graduation: "Expected May 2027",
   location: "Orlando, FL",
   /**
-   * Set this once the site has a real domain. It is used for canonical URLs,
-   * the sitemap, and Open Graph tags.
+   * The canonical origin. Used for canonical URLs, the sitemap, and Open Graph
+   * tags, so it must match the domain the site is actually served from — no
+   * trailing slash, and https, which a .dev domain requires anyway.
    */
-  url: "https://christianartigas.dev",
+  url: "https://chrisartigas.dev",
   description:
     "Christian Artigas is a Computer Engineering student at UCF working across embedded systems, electronics, full-stack software, and machine learning.",
   email: "christianm62404@gmail.com",
