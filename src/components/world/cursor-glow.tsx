@@ -103,7 +103,7 @@ export function CursorGlow() {
         >
           <motion.div
             className={cn(
-              "cursor-glow absolute top-0 left-0 size-[24rem] -translate-x-1/2 -translate-y-1/2 rounded-full",
+              "cursor-glow absolute top-0 left-0 size-[15rem] -translate-x-1/2 -translate-y-1/2 rounded-full",
               layer.tone,
             )}
             style={{ x: smoothX, y: smoothY, opacity: smoothOpacity }}
