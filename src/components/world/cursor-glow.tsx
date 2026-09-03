@@ -19,9 +19,9 @@ import { cn } from "@/lib/utils";
  *
  * Like the hero's spotlight, the position is held in motion values rather than
  * React state: the pointer fires dozens of events a second and not one of them
- * should re-render anything. The spring is deliberately loose — the light
- * arrives a beat after the cursor, which is what makes it read as a light in
- * the room rather than a shape stuck to the pointer.
+ * should re-render anything. Moves are coalesced to one per animation frame,
+ * and the halo tracks the pointer directly — at this size any easing puts it
+ * visibly behind the cursor instead of around it.
  *
  * Rendered only where a pointer can genuinely hover, and never under reduced
  * motion. On a touch screen there is no cursor to follow, and a light chasing
@@ -38,8 +38,15 @@ export function CursorGlow() {
   const y = useMotionValue(-1000);
   const opacity = useMotionValue(0);
 
-  const smoothX = useSpring(x, { stiffness: 220, damping: 30, mass: 0.5 });
-  const smoothY = useSpring(y, { stiffness: 220, damping: 30, mass: 0.5 });
+  // Position is not sprung. A trailing spring read as a light arriving a beat
+  // after the cursor while the pool was 320px across and the lag stayed inside
+  // it; at a 36px radius the same lag put the halo whole radii behind the
+  // pointer — measured 262px adrift on a brisk flick, and 209ms to catch up
+  // after stopping — which reads as a blob chasing the cursor rather than a
+  // glow around it. Moves are still coalesced to one per frame, so this costs
+  // no more work than the spring did.
+  //
+  // Opacity keeps its spring: that fade has nothing to track.
   const smoothOpacity = useSpring(opacity, {
     stiffness: 90,
     damping: 24,
@@ -103,10 +110,10 @@ export function CursorGlow() {
         >
           <motion.div
             className={cn(
-              "cursor-glow absolute top-0 left-0 size-[7.5rem] -translate-x-1/2 -translate-y-1/2 rounded-full",
+              "cursor-glow absolute top-0 left-0 size-[4.5rem] -translate-x-1/2 -translate-y-1/2 rounded-full",
               layer.tone,
             )}
-            style={{ x: smoothX, y: smoothY, opacity: smoothOpacity }}
+            style={{ x, y, opacity: smoothOpacity }}
           />
         </div>
       ))}
