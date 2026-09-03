@@ -504,6 +504,21 @@
       transparent 62%
     );
   }
+  /* The light that follows the pointer. Two stops rather than one: a faint
+     core that tints whatever is under the cursor, and a wider falloff that
+     does the actual lighting. Kept low enough that text underneath still
+     clears AA — the numbers are checked against rendered pixels, not
+     against the token values. */
+  .cursor-glow {
+    background: radial-gradient(
+      closest-side,
+      color-mix(in oklab, var(--color-signal) 11%, transparent),
+      color-mix(in oklab, var(--color-signal) 6%, transparent) 45%,
+      transparent 80%
+    );
+    will-change: transform;
+  }
+
   .signal-wash {
     background: radial-gradient(
       60rem 40rem at 30% 20%,

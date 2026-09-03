@@ -4,6 +4,7 @@ import { TrackProvider, TrackViewport } from "@/components/layout/track";
 import { Nav } from "@/components/layout/nav";
 import { ScrollProgress } from "@/components/layout/scroll-progress";
 import { Backdrop } from "@/components/world/backdrop";
+import { CursorGlow } from "@/components/world/cursor-glow";
 import { World } from "@/components/world/world";
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
@@ -43,6 +44,7 @@ export default function Home() {
         <Experience />
         <Contact />
       </TrackViewport>
+      <CursorGlow />
       <World manifest={sprites} />
     </TrackProvider>
   );
