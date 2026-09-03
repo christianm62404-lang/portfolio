@@ -72,7 +72,7 @@ export function Nav() {
           </span>
           <span className="hidden flex-col leading-none sm:flex">
             <span className="text-sm font-medium tracking-tight">{site.name}</span>
-            <span className="label-mono mt-1.5 normal-case tracking-[0.14em]">
+            <span className="label-mono mt-1.5 tracking-[0.14em]">
               Computer Engineering
             </span>
           </span>

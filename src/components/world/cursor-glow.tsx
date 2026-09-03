@@ -4,13 +4,18 @@ import { useEffect } from "react";
 import { motion, useMotionValue, useSpring } from "motion/react";
 import { usePointerFine } from "@/hooks/use-media-query";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
+import { cn } from "@/lib/utils";
 
 /**
  * A soft light that follows the pointer across the whole page.
  *
- * It sits above the panels but below the world strip and the header, so it
- * washes over the sections the reader is actually looking at without ever
- * touching the character or the navigation.
+ * It is drawn in two halves, because neither position alone works. Behind the
+ * sections the light can be bright — nothing legible sits on it — but a frame's
+ * frosted panel washes it out to about a third, and the frame is where the
+ * cursor usually is. Over the sections it survives the panel, but every bit of
+ * alpha there veils the text it crosses. So: a strong layer underneath that
+ * blooms in the gaps between frames, and a quiet one on top whose ceiling is
+ * set by the faintest text on the site rather than by taste.
  *
  * Like the hero's spotlight, the position is held in motion values rather than
  * React state: the pointer fires dozens of events a second and not one of them
@@ -83,14 +88,28 @@ export function CursorGlow() {
   if (!enabled) return null;
 
   return (
-    <div
-      aria-hidden
-      className="pointer-events-none fixed inset-0 z-[15] overflow-hidden"
-    >
-      <motion.div
-        className="cursor-glow absolute top-0 left-0 size-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{ x: smoothX, y: smoothY, opacity: smoothOpacity }}
-      />
-    </div>
+    <>
+      {[
+        { key: "under", z: "z-[5]", tone: "cursor-glow-under" },
+        { key: "over", z: "z-[15]", tone: "cursor-glow-over" },
+      ].map((layer) => (
+        <div
+          key={layer.key}
+          aria-hidden
+          className={cn(
+            "pointer-events-none fixed inset-0 overflow-hidden",
+            layer.z,
+          )}
+        >
+          <motion.div
+            className={cn(
+              "cursor-glow absolute top-0 left-0 size-[40rem] -translate-x-1/2 -translate-y-1/2 rounded-full",
+              layer.tone,
+            )}
+            style={{ x: smoothX, y: smoothY, opacity: smoothOpacity }}
+          />
+        </div>
+      ))}
+    </>
   );
 }

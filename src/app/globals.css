@@ -166,9 +166,15 @@
   --ink-dim: light-dark(#52525a, #a3a3ad);
 
   /* Lifted from #7c7c87: the monospace labels sit on --panel-2 as well as on
-     the page, and against that surface the old value measured 4.49:1. */
-  --ink-faint: #82828d;
-  --ink-faint: light-dark(#6a6a73, #82828d);
+     the page, and against that surface the old value measured 4.49:1.
+
+     Given more headroom again (#82828d / #6a6a73) once the cursor glow was
+     added. Those measured 4.94 and 4.89 against the page — over AA, but with
+     nothing to spare, so any light passing behind the translucent frames put
+     them under it. At 6.17 and 6.04 they stay above 4.5 with the glow sitting
+     right on them. */
+  --ink-faint: #93939e;
+  --ink-faint: light-dark(#5c5c65, #93939e);
 
   --signal: #a78bff;
   --signal: light-dark(#6b2fd6, #a78bff);
@@ -177,7 +183,11 @@
   --signal-soft: light-dark(#5a23bb, #c2abff);
 
   --live: #4ade80;
-  --live: light-dark(#15803d, #4ade80);
+  /* Darkened from #15803d, which measured 4.55:1 on the page — the tightest
+     token on the site, and the one the cursor glow would have pushed under AA
+     first. #0f6a31 measures 6.12 and leaves room for the light to pass over
+     it. The dark value has headroom already at 11.48. */
+  --live: light-dark(#0f6a31, #4ade80);
 
   /* Backdrop hues. Decorative only — nothing legible is ever drawn in these,
      so they carry alpha and sit well below any contrast requirement. They are
@@ -364,6 +374,22 @@
     overscroll-behavior-x: contain;
   }
 
+  /* Small uppercase monospace annotations used as engineering labels.
+
+     Lives in the components layer, not utilities. Authored alongside Tailwind's
+     own utilities it sat in the same layer and later in the output, so it won
+     on source order and quietly beat every colour put on a MonoLabel — the
+     section indices and the "Current" badge were rendering in --ink-faint
+     instead of the accent and the live green they ask for. */
+  .label-mono {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+
   /* One screen of the site.
      The panel is only a spacer: its inline padding is what opens the gap
      between one framed section and the next, so the character has clear
@@ -472,16 +498,6 @@
 }
 
 @layer utilities {
-  /* Small uppercase monospace annotations used as engineering labels. */
-  .label-mono {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    line-height: 1;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--color-ink-faint);
-  }
-
   .rule {
     border: 0;
     border-top: 1px solid var(--color-line);
@@ -504,19 +520,40 @@
       transparent 62%
     );
   }
-  /* The light that follows the pointer. Two stops rather than one: a faint
-     core that tints whatever is under the cursor, and a wider falloff that
-     does the actual lighting. Kept low enough that text underneath still
-     clears AA — the numbers are checked against rendered pixels, not
-     against the token values. */
+  /* The light that follows the pointer, drawn as two layers.
+
+     Colours are set per theme rather than mixed from one token: on a dark
+     ground a pale violet reads as light, while on a light ground that same mix
+     only greys the page, so light mode gets a more saturated violet that stays
+     purple as it washes out. */
   .cursor-glow {
+    will-change: transform;
+  }
+
+  /* The bright half, painted behind the sections. Free to be this strong
+     because nothing legible sits on top of it: at full strength in the gaps
+     between frames, and diffused to roughly a third of that through a frame's
+     frosted panel. */
+  .cursor-glow-under {
     background: radial-gradient(
       closest-side,
-      color-mix(in oklab, var(--color-signal) 11%, transparent),
-      color-mix(in oklab, var(--color-signal) 6%, transparent) 45%,
-      transparent 80%
+      light-dark(rgb(139 92 246 / 0.4), rgb(167 139 255 / 0.34)),
+      light-dark(rgb(139 92 246 / 0.19), rgb(167 139 255 / 0.16)) 45%,
+      transparent 78%
     );
-    will-change: transform;
+  }
+
+  /* The quiet half, painted over the sections, so the light still reads where
+     a frame would otherwise wash it out. Its ceiling is set by the faintest
+     text on the site rather than by taste: at this alpha --ink-faint and
+     --live both stay above 5:1 with the glow sitting directly on them. */
+  .cursor-glow-over {
+    background: radial-gradient(
+      closest-side,
+      light-dark(rgb(139 92 246 / 0.08), rgb(167 139 255 / 0.08)),
+      light-dark(rgb(139 92 246 / 0.04), rgb(167 139 255 / 0.04)) 45%,
+      transparent 78%
+    );
   }
 
   .signal-wash {
