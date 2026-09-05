@@ -29,8 +29,11 @@ export const site = {
    * against public/. Listed rather than discovered so adding a stray image to
    * public/ cannot silently join the set; any that are missing are skipped,
    * and with none present the hero simply keeps the headshot.
+   *
+   * Order is the layout: the first one is the tall panel down the left of the
+   * collage, the rest stack beside it.
    */
-  hiddenPortraitNames: ["IMG_0454", "IMG_1937", "IMG_2024"],
+  hiddenPortraitNames: ["IMG_1937", "IMG_0454", "IMG_2024"],
   /**
    * The personal accounts, shown only in the hidden mode. Kept apart from
    * `socials` deliberately: those two are the professional links the ordinary

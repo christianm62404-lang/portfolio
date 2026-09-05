@@ -48,10 +48,11 @@ export function Portrait({
       )}
     >
       {showing ? (
-        // A fixed collage: one tall photograph down the left, two stacked
-        // beside it. All three are on screen at once, which a rotation could
-        // never manage, and the square frame divides into thirds without any
-        // of them being cropped harder than the headshot was.
+        // A fixed collage: the first photograph tall down the left, the rest
+        // stacked beside it — which one leads is the order in site.ts, not a
+        // decision made here. All three are on screen at once, which a
+        // rotation could never manage, and the square frame divides into
+        // thirds without any of them being cropped harder than the headshot.
         <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-px bg-line">
           {hidden.map((photo, index) => (
             <div

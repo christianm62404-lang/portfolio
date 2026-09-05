@@ -125,12 +125,101 @@ function cutBackground(data, width, height) {
     if (y < height - 1) consider(index + width);
   }
 
+  clearArmGaps(data, width, height, outside);
+
   // Alpha is binary here. Ramping it by how light a pixel is — the obvious
   // thing — is what left a grey rim: it kept the anti-aliased matte at nearly
   // full opacity wherever the blend happened to fall below the threshold.
   // erodeEdge removes that ring outright instead.
   for (let index = 0; index < total; index += 1) {
     data[index * 4 + 3] = outside[index] ? 0 : 255;
+  }
+}
+
+/**
+ * Clears the background trapped between an arm and the body.
+ *
+ * The flood above only reaches background it can walk to from the edge of the
+ * frame, which is what protects the character's own whites. But a figure
+ * standing with its arms down encloses two slivers of background under the
+ * arms, and those stay opaque white — a pair of bright notches in the
+ * silhouette against a dark page.
+ *
+ * They cannot be told apart from the shirt or the shoes by colour: measured on
+ * this art, every enclosed light region averages within a couple of levels of
+ * every other. Shape and position do separate them. An arm gap is a tall
+ * narrow sliver down the side of the torso; the shoes are wide and at the
+ * feet, and the eye whites are wide and in the head. So: enclosed, at least
+ * twice as tall as it is wide, and clear of both the head and the feet.
+ */
+function clearArmGaps(data, width, height, outside) {
+  const total = width * height;
+
+  // The figure's own box, so "head" and "feet" mean something on any canvas.
+  let figureTop = height;
+  let figureBottom = -1;
+  for (let index = 0; index < total; index += 1) {
+    if (outside[index]) continue;
+    const y = (index / width) | 0;
+    if (y < figureTop) figureTop = y;
+    if (y > figureBottom) figureBottom = y;
+  }
+  const figureHeight = figureBottom - figureTop + 1;
+  if (figureHeight <= 0) return;
+  const bandTop = figureTop + figureHeight * 0.3;
+  const bandBottom = figureTop + figureHeight * 0.88;
+
+  const seen = new Uint8Array(total);
+  for (let start = 0; start < total; start += 1) {
+    if (seen[start] || outside[start]) continue;
+    const o = start * 4;
+    if (!isBackground(data[o], data[o + 1], data[o + 2], data[o + 3])) {
+      seen[start] = 1;
+      continue;
+    }
+
+    const cells = [];
+    const stack = [start];
+    seen[start] = 1;
+    let minX = width;
+    let maxX = -1;
+    let minY = height;
+    let maxY = -1;
+    while (stack.length) {
+      const index = stack.pop();
+      cells.push(index);
+      const x = index % width;
+      const y = (index / width) | 0;
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+      const neighbours = [
+        x > 0 ? index - 1 : -1,
+        x < width - 1 ? index + 1 : -1,
+        y > 0 ? index - width : -1,
+        y < height - 1 ? index + width : -1,
+      ];
+      for (const next of neighbours) {
+        if (next < 0 || seen[next] || outside[next]) continue;
+        const n = next * 4;
+        if (!isBackground(data[n], data[n + 1], data[n + 2], data[n + 3])) {
+          seen[next] = 1;
+          continue;
+        }
+        seen[next] = 1;
+        stack.push(next);
+      }
+    }
+
+    const blobWidth = maxX - minX + 1;
+    const blobHeight = maxY - minY + 1;
+    const centreY = (minY + maxY) / 2;
+    const isSliver = blobHeight >= blobWidth * 2;
+    const inBand = centreY >= bandTop && centreY <= bandBottom;
+    if (!isSliver || !inBand) continue;
+
+    for (const index of cells) outside[index] = 1;
   }
 }
 
