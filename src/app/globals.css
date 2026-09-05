@@ -376,6 +376,19 @@
   from { stroke-dashoffset: 240; }
   to { stroke-dashoffset: 0; }
 }
+/* The hidden mode's scattered lights, breathing rather than blinking. Two
+   groups run this at different speeds and offsets, which is what stops a
+   tiled pattern reading as a grid of identical dots. */
+@keyframes ember-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
 @keyframes aura-drift {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
   50% { transform: translate3d(2%, -3%, 0) scale(1.07); }
