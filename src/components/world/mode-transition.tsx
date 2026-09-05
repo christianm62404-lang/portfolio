@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
-  ENTRY_FRAMES,
+  TRANSITION_FRAMES,
   commitHiddenMode,
-  endEntry,
-  useEntryPhase,
+  endTransition,
+  useModeTransition,
 } from "@/lib/hidden-mode";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
 import { cn } from "@/lib/utils";
@@ -24,8 +24,8 @@ const SLIDE_MS = 520;
 const PRELOAD_CAP_MS = 1500;
 
 /**
- * The way into the hidden mode: the character reaches out and puts a hand over
- * the lens, and the site changes behind it.
+ * The way in and out of the hidden mode: the character reaches out and puts a
+ * hand over the lens, and whichever site is being left changes behind it.
  *
  * The swap is committed on the last frame, when the hand and the veil together
  * cover everything — so nothing is ever seen changing, which is the whole point
@@ -39,17 +39,17 @@ const PRELOAD_CAP_MS = 1500;
  * Under reduced motion there is no sequence at all — the mode simply applies.
  */
 export function ModeTransition() {
-  const phase = useEntryPhase();
+  const { playing, target } = useModeTransition();
   const reduceMotion = useMotionPreference();
   const [frame, setFrame] = useState(-1);
   const [lifting, setLifting] = useState(false);
 
   useEffect(() => {
-    if (phase !== "entering") return;
+    if (!playing) return;
 
     if (reduceMotion) {
-      commitHiddenMode(true);
-      endEntry();
+      commitHiddenMode(target);
+      endTransition();
       return;
     }
 
@@ -62,21 +62,21 @@ export function ModeTransition() {
       if (cancelled) return;
       // The first frame fades on, so it gets a longer hold than the rest —
       // otherwise it is still arriving when the second one cuts over it.
-      ENTRY_FRAMES.forEach((_, index) =>
+      TRANSITION_FRAMES.forEach((_, index) =>
         at(index === 0 ? 0 : FIRST_MS + (index - 1) * FRAME_MS, () =>
           setFrame(index),
         ),
       );
 
-      const covered = FIRST_MS + (ENTRY_FRAMES.length - 1) * FRAME_MS;
+      const covered = FIRST_MS + (TRANSITION_FRAMES.length - 1) * FRAME_MS;
       // On the last frame the hand and the veil are opaque; this is the one
       // instant the change can be made without anyone seeing it happen.
-      at(covered, () => commitHiddenMode(true));
+      at(covered, () => commitHiddenMode(target));
       at(covered + HOLD_MS, () => setLifting(true));
       at(covered + HOLD_MS + SLIDE_MS, () => {
         setFrame(-1);
         setLifting(false);
-        endEntry();
+        endTransition();
       });
     };
 
@@ -90,7 +90,7 @@ export function ModeTransition() {
     };
     at(PRELOAD_CAP_MS, start);
     Promise.all(
-      ENTRY_FRAMES.map(
+      TRANSITION_FRAMES.map(
         (src) =>
           new Promise<void>((resolve) => {
             const image = new window.Image();
@@ -105,9 +105,9 @@ export function ModeTransition() {
       cancelled = true;
       for (const timer of timers) clearTimeout(timer);
     };
-  }, [phase, reduceMotion]);
+  }, [playing, target, reduceMotion]);
 
-  if (phase !== "entering" || reduceMotion) return null;
+  if (!playing || reduceMotion) return null;
 
   return (
     <div
@@ -132,7 +132,7 @@ export function ModeTransition() {
 
       {/* Every frame is stacked and only the current one shown, so a frame is
           never swapped in undecoded — the same trick the walk cycle uses. */}
-      {ENTRY_FRAMES.map((src, index) => (
+      {TRANSITION_FRAMES.map((src, index) => (
         <Image
           key={src}
           src={src}

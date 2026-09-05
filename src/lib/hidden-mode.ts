@@ -2,7 +2,6 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
-import { runWipe } from "@/lib/theme";
 
 /**
  * A mode you have to find.
@@ -45,9 +44,8 @@ export function isHiddenMode() {
  * Applies the mode with no ceremony, behind whatever is covering the screen.
  *
  * Flushed, so the sprite and the photographs have actually re-rendered by the
- * time this returns: a caller hiding the swap behind a hand or a wipe has only
- * that instant to make it, and a re-render React has merely scheduled is not
- * in it.
+ * time this returns: the overlay hiding the swap has only the one instant to
+ * make it, and a re-render React has merely scheduled is not in it.
  */
 export function commitHiddenMode(on: boolean) {
   if (on === isHiddenMode()) return;
@@ -59,47 +57,46 @@ export function commitHiddenMode(on: boolean) {
 
 export function setHiddenMode(on: boolean) {
   if (on === isHiddenMode()) return;
-
-  // Going in, the character reaches out and puts a hand over the lens; the
-  // swap happens behind it. Coming out stays the diagonal wipe — leaving
-  // should be a quiet way back to the ordinary site, not a second performance.
-  if (on) {
-    beginEntry();
-    return;
-  }
-
-  runWipe(() => commitHiddenMode(false));
+  // Both ways now. The character reaches out and puts a hand over the lens,
+  // and whichever site is being left changes behind it.
+  beginTransition(on);
 }
 
-/* ------------------------------- the entrance ------------------------------ */
+/* ------------------------------ the transition ----------------------------- */
 
-/** Frames of the entrance, in order. There is no t5; the art skips it. */
-export const ENTRY_FRAMES = ["t1", "t2", "t3", "t4", "t6", "t7", "t8"].map(
+/** Frames of the transition, in order. There is no t5; the art skips it. */
+export const TRANSITION_FRAMES = ["t1", "t2", "t3", "t4", "t6", "t7", "t8"].map(
   (name) => `/sprite/${name}.png`,
 );
 
-type EntryPhase = "idle" | "entering";
-let entryPhase: EntryPhase = "idle";
+type TransitionState = { playing: boolean; target: boolean };
+let transition: TransitionState = { playing: false, target: false };
 const phaseListeners = new Set<Listener>();
 
 function emitPhase() {
   for (const listener of phaseListeners) listener();
 }
 
-function beginEntry() {
-  if (entryPhase !== "idle") return;
-  entryPhase = "entering";
+function beginTransition(target: boolean) {
+  if (transition.playing) return;
+  transition = { playing: true, target };
   emitPhase();
 }
 
-/** Called by the overlay once it has finished playing and faded away. */
-export function endEntry() {
-  entryPhase = "idle";
+/** Called by the overlay once it has finished playing and slid away. */
+export function endTransition() {
+  transition = { playing: false, target: transition.target };
   emitPhase();
 }
 
-/** Whether the entrance is playing, safe to branch on during render. */
-export function useEntryPhase() {
+const IDLE: TransitionState = { playing: false, target: false };
+
+/**
+ * Whether the transition is playing and which way, safe to branch on during
+ * render. The snapshot object is the stored one rather than a fresh literal,
+ * because `useSyncExternalStore` compares by identity.
+ */
+export function useModeTransition() {
   const subscribe = useCallback((onChange: Listener) => {
     phaseListeners.add(onChange);
     return () => {
@@ -109,8 +106,8 @@ export function useEntryPhase() {
 
   return useSyncExternalStore(
     subscribe,
-    () => entryPhase,
-    () => "idle" as const,
+    () => transition,
+    () => IDLE,
   );
 }
 
