@@ -64,10 +64,41 @@ export function setHiddenMode(on: boolean) {
 
 /* ------------------------------ the transition ----------------------------- */
 
-/** Frames of the transition, in order. There is no t5; the art skips it. */
-export const TRANSITION_FRAMES = ["t1", "t2", "t3", "t4", "t6", "t7", "t8"].map(
-  (name) => `/sprite/${name}.png`,
-);
+/**
+ * Frames of the transition, in order, and there are two sets.
+ *
+ * Going in he reaches out and smoulders; coming out he waves and grins. Both
+ * end with a hand over the lens, which is what the swap hides behind, but they
+ * are not the same performance and the numbering has its own gaps — the entry
+ * art skips t5, the exit art skips a4, and a1-5 is a half-step between the
+ * first two.
+ */
+const framePaths = (names: string[]) =>
+  names.map((name) => `/sprite/${name}.png`);
+
+export const ENTER_FRAMES = framePaths([
+  "t1",
+  "t2",
+  "t3",
+  "t4",
+  "t6",
+  "t7",
+  "t8",
+]);
+export const EXIT_FRAMES = framePaths([
+  "a1",
+  "a1-5",
+  "a2",
+  "a3",
+  "a5",
+  "a6",
+  "a7",
+  "a8",
+]);
+
+/** The set for a given direction: true is going in. */
+export const framesFor = (entering: boolean) =>
+  entering ? ENTER_FRAMES : EXIT_FRAMES;
 
 type TransitionState = { playing: boolean; target: boolean };
 let transition: TransitionState = { playing: false, target: false };
