@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const FRAME_MS = 135;
 
 /** In the hidden mode: how long he holds the smoulder, and the raised brow. */
-const SMOULDER_MS = 12_000;
+const SMOULDER_MS = 7_000;
 const EYEBROW_MS = 3_000;
 
 /**
@@ -87,11 +87,11 @@ export function Character({ manifest }: { manifest: SpriteManifest }) {
     setBrow(false);
   }
 
-  // The brow flick, on its own clock: twelve seconds of stillness, three
+  // The brow flick, on its own clock: seven seconds of stillness, three
   // seconds raised, and back. The effect is keyed on `resting`, so any step
   // he takes tears the timer down and the count starts again from the moment
-  // he next stands still — which is what "twelve seconds without moving"
-  // means, rather than twelve seconds of wall clock.
+  // he next stands still — which is what "seven seconds without moving"
+  // means, rather than seven seconds of wall clock.
   useEffect(() => {
     if (!resting) return;
     let raise: ReturnType<typeof setTimeout>;
