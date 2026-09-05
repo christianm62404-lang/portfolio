@@ -115,9 +115,18 @@
      the track and the world strip over the bottom, so panels reserve room for
      both rather than sitting under them. */
   --header-h: 4.5rem;
+  /* Breathing room between a frame and the furniture above and below it, and
+     the frame's own inner padding — named so the hidden mode can tighten both
+     without restating the layout. */
+  --panel-gap: 1.25rem;
+  --frame-pad: clamp(1.1rem, 2vw, 1.75rem);
   --world-h: 11rem;
   --ground-offset: 2.5rem;
-  --character-h: 9rem;
+  /* The character's height is a base times a scale, so the hidden mode can
+     double him without every height tier below needing a second value. */
+  --character-base: 9rem;
+  --character-scale: 1;
+  --character-h: calc(var(--character-base) * var(--character-scale));
 
   /* Slow enough to read as a deliberate change of state. The fade is the
      fallback for browsers without view transitions; the wipe is the headline. */
@@ -227,11 +236,33 @@
   }
 }
 
+/* The hidden mode carries a character twice the height on the same screens, so
+   it steps the type down one notch further at every tier. Higher specificity
+   than the plain tiers above, which is what lets these replace them. */
+:root[data-mode="matthew"] {
+  font-size: 96%;
+}
+@media (max-height: 880px) {
+  :root[data-mode="matthew"] {
+    font-size: 91%;
+  }
+}
+@media (max-height: 780px) {
+  :root[data-mode="matthew"] {
+    font-size: 86%;
+  }
+}
+@media (max-height: 700px) {
+  :root[data-mode="matthew"] {
+    font-size: 83%;
+  }
+}
+
 @media (max-height: 920px) {
   :root {
     --world-h: 9.5rem;
     --ground-offset: 2rem;
-    --character-h: 7.75rem;
+    --character-base: 7.75rem;
   }
 }
 
@@ -239,7 +270,7 @@
   :root {
     --world-h: 8rem;
     --ground-offset: 1.5rem;
-    --character-h: 6.5rem;
+    --character-base: 6.5rem;
   }
 }
 
@@ -248,7 +279,7 @@
     --header-h: 3.75rem;
     --world-h: 7rem;
     --ground-offset: 1.25rem;
-    --character-h: 5.75rem;
+    --character-base: 5.75rem;
   }
 }
 
@@ -272,18 +303,38 @@
    change rides the same view-transition wipe and, where that is unavailable,
    the same token cross-fade. */
 :root[data-mode="matthew"] {
+  /* Dark whichever theme is underneath. The mode is a room with the lights
+     off and a red strip along the ceiling; a light version of that is not the
+     same idea, and the way out is one button away. */
+  color-scheme: dark;
+
+  --canvas: #050506;
+  --panel: #0a0a0c;
+  --panel-2: #0d0d11;
+  --line: #1c1c22;
+  --line-bright: #2b2b34;
+
+  /* Twice the size, which costs a quarter of a short viewport. The ground
+     offset comes right down to pay some of that back — he stands closer to
+     the bottom edge — and the type steps down a notch below, so the sections
+     that survive into the mode still fit without scrolling inside a frame. */
+  --character-scale: 2;
+  --ground-offset: 0.35rem;
+  --world-h: 9rem;
+  --panel-gap: 0.45rem;
+  --frame-pad: clamp(0.7rem, 1.3vw, 1.05rem);
+
   --signal: #e2606c;
-  --signal: light-dark(#9b1c33, #e2606c);
-
   --signal-soft: #ef8a92;
-  --signal-soft: light-dark(#821428, #ef8a92);
 
-  --aura-violet: rgb(224 74 84 / 0.32);
-  --aura-violet: light-dark(rgb(196 40 56 / 0.19), rgb(224 74 84 / 0.32));
-  --aura-indigo: rgb(158 28 44 / 0.30);
-  --aura-indigo: light-dark(rgb(140 24 40 / 0.15), rgb(158 28 44 / 0.30));
-  --aura-magenta: rgb(238 108 92 / 0.22);
-  --aura-magenta: light-dark(rgb(206 66 52 / 0.12), rgb(238 108 92 / 0.22));
+  --ink: #f0eeef;
+  --ink-strong: #ffffff;
+  --ink-dim: #a8a2a4;
+  --ink-faint: #8e8689;
+
+  --aura-violet: rgb(224 74 84 / 0.30);
+  --aura-indigo: rgb(158 28 44 / 0.28);
+  --aura-magenta: rgb(238 108 92 / 0.20);
 }
 
 @theme inline {
@@ -424,7 +475,11 @@
     height: 100%;
     display: flex;
     align-items: stretch;
-    padding-block: calc(var(--header-h) + 1.25rem) calc(var(--world-h) + 1.25rem);
+    /* Clear whichever reaches higher: the ground band, or the character
+       standing on it. They are the same order of size normally, but the hidden
+       mode doubles him and only this keeps the frames off his head. */
+    padding-block: calc(var(--header-h) + var(--panel-gap))
+      calc(max(var(--world-h), var(--ground-offset) + var(--character-h)) + var(--panel-gap));
     padding-inline: clamp(1rem, 2.6vw, 3.25rem);
   }
 
@@ -437,7 +492,7 @@
     gap: clamp(2.5rem, 5vw, 6.5rem);
     height: 100%;
     padding-inline: clamp(1.75rem, 3.4vw, 3.75rem);
-    padding-block: clamp(1.1rem, 2vw, 1.75rem);
+    padding-block: var(--frame-pad);
     border: 1px solid var(--color-line-bright);
     border-radius: 3px;
     background: color-mix(in oklab, var(--color-panel) 66%, transparent);
@@ -484,7 +539,8 @@
   @media (max-width: 900px) {
     .panel {
       width: 100vw;
-      padding-block: calc(var(--header-h) + 0.75rem) calc(var(--world-h) + 0.75rem);
+      padding-block: calc(var(--header-h) + 0.75rem)
+        calc(max(var(--world-h), var(--ground-offset) + var(--character-h)) + 0.75rem);
       padding-inline: 0.75rem;
     }
     .frame {
@@ -545,6 +601,32 @@
       transparent 62%
     );
   }
+  /* The LED rail under the header, in the hidden mode.
+
+     One photographed strip repeated along the top. The tile is cut to a whole
+     number of the strip's own period and clear of both solder tabs, so copies
+     meet without a seam — see scripts/make-led-tile.mjs. Stretched wider than
+     its natural aspect on purpose: at true scale the LEDs sit too close
+     together to read as a strip at this size.
+
+     The glow underneath is a separate layer rather than a shadow on the image,
+     because a drop-shadow would trace the strip's silhouette and the light
+     should spill downward onto the page instead. */
+  .led-rail {
+    background-image: url("/led-tile.png");
+    background-repeat: repeat-x;
+    background-position: left center;
+    background-size: 13rem 100%;
+  }
+
+  .led-glow {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-signal) 34%, transparent),
+      transparent 78%
+    );
+  }
+
   .signal-wash {
     background: radial-gradient(
       60rem 40rem at 30% 20%,

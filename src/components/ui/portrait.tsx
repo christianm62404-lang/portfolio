@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { site } from "@/content/site";
 import { notePortraitTap, useHiddenMode } from "@/lib/hidden-mode";
 import { cn } from "@/lib/utils";
-
-/** How long each of the hidden mode's photographs is held. */
-const SLIDE_MS = 4200;
 
 /**
  * Headshot with a designed fallback.
@@ -32,20 +29,8 @@ export function Portrait({
 }) {
   const [failed, setFailed] = useState(false);
   const hiddenMode = useHiddenMode();
-  const [slide, setSlide] = useState(0);
 
-  const showing = hiddenMode && hidden.length > 0;
-
-  // The set is a rotation rather than a single swap: three photographs replace
-  // one, and showing them in turn is the only way all three are ever seen.
-  useEffect(() => {
-    if (!showing || hidden.length < 2) return;
-    const timer = setInterval(
-      () => setSlide((current) => (current + 1) % hidden.length),
-      SLIDE_MS,
-    );
-    return () => clearInterval(timer);
-  }, [showing, hidden.length]);
+  const showing = hidden.length > 0 && hiddenMode;
 
   return (
     <div
@@ -63,23 +48,31 @@ export function Portrait({
       )}
     >
       {showing ? (
-        // Every photograph is stacked and cross-faded rather than swapped, so
-        // the frame never shows a gap while the next one decodes.
-        hidden.map((photo, index) => (
-          <Image
-            key={photo}
-            src={photo}
-            alt=""
-            fill
-            sizes="(min-width: 1024px) 26rem, (min-width: 640px) 18rem, 62vw"
-            className={cn(
-              // Anchored to the top: these are phone portraits in a square
-              // frame, and centring them crops the top of the head off.
-              "object-cover object-top transition-opacity duration-700 ease-[var(--ease-out-expo)]",
-              index === slide % hidden.length ? "opacity-100" : "opacity-0",
-            )}
-          />
-        ))
+        // A fixed collage: one tall photograph down the left, two stacked
+        // beside it. All three are on screen at once, which a rotation could
+        // never manage, and the square frame divides into thirds without any
+        // of them being cropped harder than the headshot was.
+        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-px bg-line">
+          {hidden.map((photo, index) => (
+            <div
+              key={photo}
+              className={cn(
+                "relative overflow-hidden bg-panel-2",
+                index === 0 && "row-span-2",
+              )}
+            >
+              <Image
+                src={photo}
+                alt=""
+                fill
+                sizes="(min-width: 1024px) 13rem, (min-width: 640px) 9rem, 31vw"
+                // Anchored to the top: these are phone portraits in a much
+                // shorter frame, and centring them crops the head off.
+                className="object-cover object-top"
+              />
+            </div>
+          ))}
+        </div>
       ) : failed || !src ? (
         // Reads as a monogram plate rather than a failed image: this is the
         // hero, so it has to look chosen while the photo is pending.

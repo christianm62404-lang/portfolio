@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { navItems, site } from "@/content/site";
+import { hiddenNavItems, navItems, site } from "@/content/site";
 import { useActiveSection } from "@/hooks/use-active-section";
 import {
   useTrackElement,
@@ -13,15 +13,18 @@ import { MonoLabel, StatusDot } from "@/components/ui/primitives";
 import { ButtonLink } from "@/components/ui/button";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { noteMonogramTap } from "@/lib/hidden-mode";
+import { noteMonogramTap, useHiddenMode } from "@/lib/hidden-mode";
 import { cn } from "@/lib/utils";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
-
-const sectionIds = navItems.map((item) => item.id);
 
 export function Nav() {
   const [condensed, setCondensed] = useState(false);
   const trackRef = useTrackElement();
+  const hidden = useHiddenMode();
+  // The mode drops four panels, so the header has to list what is actually
+  // there — a link to a section the track no longer holds goes nowhere.
+  const items = hidden ? hiddenNavItems : navItems;
+  const sectionIds = useMemo(() => items.map((item) => item.id), [items]);
   const active = useActiveSection(sectionIds, trackRef);
   const goToSection = useTrackNavigation();
   const progress = useTrackProgress();
@@ -103,7 +106,7 @@ export function Nav() {
             condensed ? "border-line" : "border-transparent",
           )}
         >
-          {navItems.map((item) => {
+          {items.map((item) => {
             const isActive = active === item.id;
             return (
               <a
@@ -163,7 +166,7 @@ export function Nav() {
             <ArrowUpRight />
           </ButtonLink>
 
-          <MobileMenu active={active} onNavigate={goToSection} />
+          <MobileMenu active={active} items={items} onNavigate={goToSection} />
         </div>
       </div>
     </header>

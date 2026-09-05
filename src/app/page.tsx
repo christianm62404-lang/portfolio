@@ -6,6 +6,9 @@ import { ScrollProgress } from "@/components/layout/scroll-progress";
 import { Backdrop } from "@/components/world/backdrop";
 import { World } from "@/components/world/world";
 import { UnlockWatcher } from "@/components/world/unlock-watcher";
+import { LedRail } from "@/components/world/led-rail";
+import { TrackSections } from "@/components/layout/track-sections";
+import { Personal } from "@/components/sections/personal";
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
 import { Work } from "@/components/sections/work";
@@ -36,14 +39,35 @@ export default function Home() {
       <Backdrop />
       <ScrollProgress />
       <Nav />
+      <LedRail />
       <TrackViewport>
-        <Hero portraitSrc={portraitSrc} hiddenPortraits={hiddenPortraits} />
-        <About />
-        <Work />
-        <Labs />
-        <Skills />
-        <Experience />
-        <Contact />
+        <TrackSections
+          standard={
+            <>
+              <Hero
+                portraitSrc={portraitSrc}
+                hiddenPortraits={hiddenPortraits}
+              />
+              <About />
+              <Work />
+              <Labs />
+              <Skills />
+              <Experience />
+              <Contact />
+            </>
+          }
+          hidden={
+            <>
+              <Hero
+                portraitSrc={portraitSrc}
+                hiddenPortraits={hiddenPortraits}
+              />
+              <Experience />
+              <Personal />
+              <Contact />
+            </>
+          }
+        />
       </TrackViewport>
       <World manifest={sprites} />
       <UnlockWatcher />

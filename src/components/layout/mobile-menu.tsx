@@ -3,7 +3,7 @@
 import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "motion/react";
-import { navItems, site } from "@/content/site";
+import { site } from "@/content/site";
 import { MonoLabel, StatusDot } from "@/components/ui/primitives";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
@@ -18,9 +18,13 @@ import { useMotionPreference } from "@/hooks/use-motion-preference";
  */
 export function MobileMenu({
   active,
+  items,
   onNavigate,
 }: {
   active: string;
+  /** Passed in rather than read here, so the sheet lists whatever the header
+      is listing — the hidden mode shows a shorter run. */
+  items: readonly { id: string; label: string }[];
   onNavigate?: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -81,7 +85,13 @@ export function MobileMenu({
                     aria-label="Close menu"
                     className="absolute top-[1.125rem] right-5 grid size-10 place-items-center border border-line-bright text-ink transition-colors duration-200 hover:border-signal hover:text-signal"
                   >
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      aria-hidden
+                    >
                       <path
                         d="M2 2L12 12M12 2L2 12"
                         stroke="currentColor"
@@ -99,8 +109,11 @@ export function MobileMenu({
 
                 <nav>
                   <ul className="flex flex-col">
-                    {navItems.map((item, index) => (
-                      <li key={item.id} className="border-b border-line last:border-0">
+                    {items.map((item, index) => (
+                      <li
+                        key={item.id}
+                        className="border-b border-line last:border-0"
+                      >
                         <a
                           href={`#${item.id}`}
                           onClick={(event) => {
@@ -117,7 +130,9 @@ export function MobileMenu({
                           )}
                         >
                           <MonoLabel
-                            className={active === item.id ? "text-signal" : undefined}
+                            className={
+                              active === item.id ? "text-signal" : undefined
+                            }
                           >
                             {String(index + 1).padStart(2, "0")}
                           </MonoLabel>

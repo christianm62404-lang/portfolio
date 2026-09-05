@@ -31,8 +31,29 @@ export const site = {
    * and with none present the hero simply keeps the headshot.
    */
   hiddenPortraitNames: ["IMG_0454", "IMG_1937", "IMG_2024"],
+  /**
+   * The personal accounts, shown only in the hidden mode. Kept apart from
+   * `socials` deliberately: those two are the professional links the ordinary
+   * site leads with, and these are not.
+   */
+  personalSocials: [
+    {
+      label: "Spotify",
+      handle: "Christian Artigas",
+      href: "https://open.spotify.com/user/10by4zsblbudom5lvd95zqhmo?si=b7db57b138e74133",
+    },
+    {
+      label: "Instagram",
+      handle: "@christian_artigas",
+      href: "https://www.instagram.com/christian_artigas",
+    },
+  ],
   socials: [
-    { label: "GitHub", handle: "christianm62404-lang", href: "https://github.com/christianm62404-lang" },
+    {
+      label: "GitHub",
+      handle: "christianm62404-lang",
+      href: "https://github.com/christianm62404-lang",
+    },
     {
       label: "LinkedIn",
       handle: "christian-artigas",
@@ -50,4 +71,14 @@ export const navItems = [
   { id: "contact", label: "Contact" },
 ] as const;
 
-export type NavId = (typeof navItems)[number]["id"];
+/** The shorter run the hidden mode shows, in the order the panels are laid. */
+export const hiddenNavItems = [
+  { id: "home", label: "Home" },
+  { id: "experience", label: "Experience" },
+  { id: "personal", label: "Elsewhere" },
+  { id: "contact", label: "Contact" },
+] as const;
+
+export type NavId =
+  | (typeof navItems)[number]["id"]
+  | (typeof hiddenNavItems)[number]["id"];
