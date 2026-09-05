@@ -1,8 +1,10 @@
-import fs from "node:fs";
-import path from "node:path";
-
 /**
- * The character's frames.
+ * The character's frames, as data only.
+ *
+ * No filesystem here: this module is imported by the client component that
+ * animates him, and pulling `node:fs` in behind a single constant is enough to
+ * break the client bundle. Resolving which files exist lives in
+ * `sprite-server.ts` instead.
  *
  * Keys are the roles the animation needs; values are the files expected in
  * public/sprite/. Naming follows "<facing>-<leading leg>", so `right-left` is
@@ -20,32 +22,42 @@ export const SPRITE_FILES = {
      `smolderEyebrow` is the one it flicks to. */
   smolder: "smolder.png",
   smolderEyebrow: "smolder-eyebrow.png",
+
+  /* And its walk: a second, longer cycle drawn for the mode. The suffixes are
+     the art's own — `ss` is the wider stride, `s` the narrower one. */
+  faceLeftS: "face-left-s.png",
+  faceRightS: "face-right-s.png",
+  leftLeftS: "left-left-s.png",
+  leftLeftSS: "left-left-ss.png",
+  leftRightS: "left-right-s.png",
+  leftRightSS: "left-right-ss.png",
+  rightLeftS: "right-left-s.png",
+  rightLeftSS: "right-left-ss.png",
+  rightRightS: "right-right-s.png",
+  rightRightSS: "right-right-ss.png",
 } as const;
+
+/**
+ * The roles only the hidden mode uses.
+ *
+ * Held apart so the ordinary site does not carry the mode's art: the character
+ * renders one set or the other, and a visitor who never finds the mode never
+ * loads a frame of it.
+ */
+export const HIDDEN_ROLES = [
+  "smolder",
+  "smolderEyebrow",
+  "faceLeftS",
+  "faceRightS",
+  "leftLeftS",
+  "leftLeftSS",
+  "leftRightS",
+  "leftRightSS",
+  "rightLeftS",
+  "rightLeftSS",
+  "rightRightS",
+  "rightRightSS",
+] as const;
 
 export type SpriteRole = keyof typeof SPRITE_FILES;
 export type SpriteManifest = Partial<Record<SpriteRole, string>>;
-
-/**
- * Which frames actually exist, resolved on the server.
- *
- * The art is supplied by the site owner rather than committed by the build, so
- * its presence is checked here instead of being discovered by the browser as a
- * string of failed requests. Frames that are missing are simply absent from
- * the manifest, and the character component decides what to do without them —
- * a left-facing frame can be mirrored from its right-facing twin, and with no
- * frames at all the character does not render.
- */
-export function readSpriteManifest(): SpriteManifest {
-  const manifest: SpriteManifest = {};
-  for (const [role, file] of Object.entries(SPRITE_FILES) as [SpriteRole, string][]) {
-    try {
-      if (fs.existsSync(path.join(process.cwd(), "public", "sprite", file))) {
-        manifest[role] = `/sprite/${file}`;
-      }
-    } catch {
-      // An unreadable public directory is not worth failing the build over.
-      return {};
-    }
-  }
-  return manifest;
-}

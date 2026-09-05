@@ -5,7 +5,11 @@ import Image from "next/image";
 import { useTravelDirection } from "@/components/layout/track";
 import { useHiddenMode } from "@/lib/hidden-mode";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
-import type { SpriteManifest, SpriteRole } from "@/lib/sprite";
+import {
+  HIDDEN_ROLES,
+  type SpriteManifest,
+  type SpriteRole,
+} from "@/lib/sprite";
 import { cn } from "@/lib/utils";
 
 /** Milliseconds per frame. Slow enough to read as steps, not a flicker. */
@@ -39,11 +43,46 @@ const WALK_LEFT: Frame[] = [
   { role: "faceLeft" },
 ];
 
+/**
+ * The hidden mode's walk: eight frames rather than four.
+ *
+ * Each stride is held on the wide pose, eased through the narrow one and back
+ * out to the wide again before passing — so a step reads as a step being taken
+ * rather than as two positions alternating, which is what the four-frame cycle
+ * can only suggest.
+ */
+const HIDDEN_WALK_RIGHT: Frame[] = [
+  { role: "rightRightSS" },
+  { role: "rightRightS" },
+  { role: "rightRightSS" },
+  { role: "faceRightS" },
+  { role: "rightLeftSS" },
+  { role: "rightLeftS" },
+  { role: "rightLeftSS" },
+  { role: "faceRightS" },
+];
+
+const HIDDEN_WALK_LEFT: Frame[] = [
+  { role: "leftLeftSS" },
+  { role: "leftLeftS" },
+  { role: "leftLeftSS" },
+  { role: "faceLeftS" },
+  { role: "leftRightSS" },
+  { role: "leftRightS" },
+  { role: "leftRightSS" },
+  { role: "faceLeftS" },
+];
+
 /** Right-facing stand-ins for left-facing roles, used when art is missing. */
 const MIRROR_OF: Partial<Record<SpriteRole, SpriteRole>> = {
   faceLeft: "faceRight",
   leftLeft: "rightRight",
   leftRight: "rightLeft",
+  faceLeftS: "faceRightS",
+  leftLeftS: "rightRightS",
+  leftLeftSS: "rightRightSS",
+  leftRightS: "rightLeftS",
+  leftRightSS: "rightLeftSS",
 };
 
 function resolve(frame: Frame, manifest: SpriteManifest) {
@@ -130,20 +169,27 @@ export function Character({ manifest }: { manifest: SpriteManifest }) {
 
   if (Object.keys(manifest).length === 0) return null;
 
-  const cycle = direction === 1 ? WALK_RIGHT : WALK_LEFT;
-  // Only the standing-still frame changes in the hidden mode. He walks the
-  // same way in it, because the walk cycle has no smouldering counterpart and
-  // inventing one would make him a different character mid-stride.
+  const cycle = hidden
+    ? direction === 1
+      ? HIDDEN_WALK_RIGHT
+      : HIDDEN_WALK_LEFT
+    : direction === 1
+      ? WALK_RIGHT
+      : WALK_LEFT;
   const standing: Frame = resting
     ? { role: brow ? "smolderEyebrow" : "smolder" }
     : { role: "forward" };
+  // Facing without walking — which is where reduced motion leaves him — uses
+  // the same profile the mode's cycle passes through, so he does not change
+  // character the moment the animation is switched off.
+  const facing: Frame = hidden
+    ? { role: direction === 1 ? "faceRightS" : "faceLeftS" }
+    : { role: direction === 1 ? "faceRight" : "faceLeft" };
   const frame: Frame = walking
     ? cycle[step % cycle.length]
     : direction === 0
       ? standing
-      : direction === 1
-        ? { role: "faceRight" }
-        : { role: "faceLeft" };
+      : facing;
 
   const resolved =
     resolve(frame, manifest) ?? resolve({ role: "forward" }, manifest);
@@ -157,24 +203,30 @@ export function Character({ manifest }: { manifest: SpriteManifest }) {
       {/* Every frame is stacked in the same box and only the active one is
           shown, so the browser decodes each sprite once and the walk never
           flashes an undecoded frame. */}
-      {Object.entries(manifest).map(([role, src]) => {
-        const isActive = src === resolved.src;
-        return (
-          <Image
-            key={role}
-            src={src}
-            alt=""
-            fill
-            sizes="240px"
-            priority={role === "forward"}
-            className={cn(
-              "object-contain object-bottom [image-rendering:pixelated]",
-              isActive ? "opacity-100" : "opacity-0",
-              isActive && resolved.mirror && "-scale-x-100",
-            )}
-          />
-        );
-      })}
+      {Object.entries(manifest)
+        .filter(([role]) =>
+          hidden
+            ? true
+            : !HIDDEN_ROLES.includes(role as (typeof HIDDEN_ROLES)[number]),
+        )
+        .map(([role, src]) => {
+          const isActive = src === resolved.src;
+          return (
+            <Image
+              key={role}
+              src={src}
+              alt=""
+              fill
+              sizes="240px"
+              priority={role === "forward"}
+              className={cn(
+                "object-contain object-bottom [image-rendering:pixelated]",
+                isActive ? "opacity-100" : "opacity-0",
+                isActive && resolved.mirror && "-scale-x-100",
+              )}
+            />
+          );
+        })}
     </div>
   );
 }

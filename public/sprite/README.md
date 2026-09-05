@@ -1,6 +1,6 @@
 # Character sprites
 
-The nine frames of the character who walks along the bottom of the site.
+The nineteen frames of the character who walks along the bottom of the site.
 Drop them in this folder as PNGs with transparent backgrounds, named exactly
 as below — the names are matched literally in `src/lib/sprite.ts`.
 
@@ -15,6 +15,16 @@ as below — the names are matched literally in `src/lib/sprite.ts`.
 | `left-left.png` | walking left, left leg forward |
 | `smolder.png` | standing, smouldering — the hidden mode's resting frame |
 | `smolder-eyebrow.png` | the same, one eyebrow raised |
+| `face-right-s.png` | hidden-mode passing pose, facing right |
+| `face-left-s.png` | and facing left |
+| `right-right-ss.png` | hidden-mode walk right, right leg forward, wide stride |
+| `right-right-s.png` | the same, narrow stride |
+| `right-left-ss.png` | walk right, left leg forward, wide stride |
+| `right-left-s.png` | the same, narrow stride |
+| `left-left-ss.png` | walk left, left leg forward, wide stride |
+| `left-left-s.png` | the same, narrow stride |
+| `left-right-ss.png` | walk left, right leg forward, wide stride |
+| `left-right-s.png` | the same, narrow stride |
 
 ## How they are used
 
@@ -78,4 +88,10 @@ node scripts/normalize-sprites.mjs --from path/to/new-art --width 351
 ```
 
 `--analyze` measures without writing anything, which is the safe way to check
-what a frame would come out as first.
+what a frame would come out as first, and `--padding` narrows the side margin
+when a wider pose is a few pixels over the sheet it has to join.
+
+The art has arrived on transparent, white and flat black backgrounds; the
+script decides which by looking at each frame's border, because one test
+cannot serve all three — accepting both light and dark would let the flood walk
+out of a white background and along the figure's own black outline.

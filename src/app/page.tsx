@@ -1,5 +1,5 @@
 import { findHiddenPortraits, findPortrait } from "@/lib/portrait";
-import { readSpriteManifest } from "@/lib/sprite";
+import { readSpriteManifest } from "@/lib/sprite-server";
 import { TrackProvider, TrackViewport } from "@/components/layout/track";
 import { Nav } from "@/components/layout/nav";
 import { ScrollProgress } from "@/components/layout/scroll-progress";

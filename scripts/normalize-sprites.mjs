@@ -37,6 +37,20 @@ const TARGET_HEIGHT = 620; // standing height in the output canvas
 const CANVAS_PADDING = 10; // breathing room so scaling never clips an outline
 
 /**
+ * The side margin only, which --padding narrows.
+ *
+ * A frame added to an existing sheet has to fit the width already on disk, and
+ * a wider pose can be a few pixels over. Trimming the side margin is a better
+ * answer than either widening every other frame or letting this one be clipped
+ * — and it has to be the side margin alone, because the vertical padding sets
+ * the canvas height, and a frame two pixels shorter than the rest scales
+ * differently inside the same box.
+ */
+const paddingFlag = process.argv.indexOf("--padding");
+const SIDE_PADDING =
+  paddingFlag === -1 ? CANVAS_PADDING : Number(process.argv[paddingFlag + 1]);
+
+/**
  * Canvas width is normally the widest frame in the batch plus padding, which is
  * right when the whole set is processed together. Adding frames to an existing
  * set is the exception: pass --width to pin the canvas to the sheet already on
@@ -81,8 +95,49 @@ const RENAMES = {
  * would treat the cleared canvas as part of the figure and rescale the padding
  * along with the character.
  */
-const isBackground = (r, g, b, a) =>
+const isTransparent = (r, g, b, a) => a < 16;
+const isLight = (r, g, b, a) =>
   a < 16 || (Math.min(r, g, b) >= 228 && Math.max(r, g, b) - Math.min(r, g, b) <= 14);
+/**
+ * Near-black, and only just. The figure carries black of its own — the
+ * outline, and the shadow inside the shirt — but measured on this art the
+ * background sits at a max channel of 0-2 while the outline that meets it
+ * starts at 11, so a threshold this tight floods the background and stops at
+ * the silhouette rather than walking into the shirt.
+ */
+const isDark = (r, g, b, a) => a < 16 || Math.max(r, g, b) <= 6;
+
+/**
+ * Which of those a given frame is drawn on, decided by looking at its border.
+ *
+ * The art has arrived on all three: transparent, white, and a flat black. One
+ * predicate cannot serve all of them — accepting both light and dark would let
+ * the flood walk out of a white background and along the figure's own black
+ * outline — so each frame gets the test that matches what it was exported on.
+ */
+function backgroundTestFor(data, width, height) {
+  let clear = 0;
+  let light = 0;
+  let dark = 0;
+  const sample = (x, y) => {
+    const o = (y * width + x) * 4;
+    const [r, g, b, a] = [data[o], data[o + 1], data[o + 2], data[o + 3]];
+    if (a < 16) clear += 1;
+    else if (Math.min(r, g, b) >= 228) light += 1;
+    else if (Math.max(r, g, b) <= 6) dark += 1;
+  };
+  for (let x = 0; x < width; x += 4) {
+    sample(x, 0);
+    sample(x, height - 1);
+  }
+  for (let y = 0; y < height; y += 4) {
+    sample(0, y);
+    sample(width - 1, y);
+  }
+  if (clear >= light && clear >= dark) return isTransparent;
+  if (dark > light) return isDark;
+  return isLight;
+}
 
 /**
  * Clears the background by flooding inward from the border.
@@ -92,6 +147,7 @@ const isBackground = (r, g, b, a) =>
  * figure is background.
  */
 function cutBackground(data, width, height) {
+  const isBackground = backgroundTestFor(data, width, height);
   const total = width * height;
   const outside = new Uint8Array(total);
   const queue = new Int32Array(total);
@@ -125,7 +181,7 @@ function cutBackground(data, width, height) {
     if (y < height - 1) consider(index + width);
   }
 
-  clearArmGaps(data, width, height, outside);
+  clearArmGaps(data, width, height, outside, isBackground);
 
   // Alpha is binary here. Ramping it by how light a pixel is — the obvious
   // thing — is what left a grey rim: it kept the anti-aliased matte at nearly
@@ -152,7 +208,7 @@ function cutBackground(data, width, height) {
  * feet, and the eye whites are wide and in the head. So: enclosed, at least
  * twice as tall as it is wide, and clear of both the head and the feet.
  */
-function clearArmGaps(data, width, height, outside) {
+function clearArmGaps(data, width, height, outside, isBackground) {
   const total = width * height;
 
   // The figure's own box, so "head" and "feet" mean something on any canvas.
@@ -322,7 +378,7 @@ for (const m of measured) {
 // canvas, so every frame plants them on the same line and the shorter
 // mid-stride frames simply carry more empty space over the head.
 const canvasHeight = TARGET_HEIGHT + CANVAS_PADDING;
-const measuredWidth = Math.max(...measured.map((m) => m.drawnWidth)) + CANVAS_PADDING * 2;
+const measuredWidth = Math.max(...measured.map((m) => m.drawnWidth)) + SIDE_PADDING * 2;
 if (FORCED_WIDTH && measuredWidth > FORCED_WIDTH) {
   console.error(
     `--width ${FORCED_WIDTH} is narrower than the ${measuredWidth} these frames need; they would be clipped.`,
@@ -335,6 +391,7 @@ console.log(`\ncanvas ${canvasWidth} x ${canvasHeight}\n`);
 
 await mkdir(OUTPUT, { recursive: true });
 
+const written = [];
 for (const m of measured) {
   const base = path.basename(m.file, ".png");
   const outName = `${RENAMES[base] ?? base.replace(/\s+/g, "-")}.png`;
@@ -369,6 +426,7 @@ for (const m of measured) {
     .toBuffer();
 
   await writeFile(path.join(OUTPUT, outName), out);
+  written.push(outName);
   console.log(
     `${outName.padEnd(20)} ${String(drawnWidth).padStart(3)}x${drawnHeight}  scale ${m.scale.toFixed(3)}  ${(out.length / 1024).toFixed(0)} KB`,
   );
@@ -376,7 +434,9 @@ for (const m of measured) {
 
 // A contact sheet, so the set can be eyeballed as a set rather than one file
 // at a time. Not part of the site — written outside public/.
-const sheetTargets = Object.values(RENAMES);
+/* A contact sheet of what this run produced — not of some fixed list, which
+   could not be composited at all when a batch used a different canvas. */
+const sheetTargets = written;
 const sheet = await sharp({
   create: {
     width: canvasWidth * sheetTargets.length,
@@ -387,7 +447,7 @@ const sheet = await sharp({
 })
   .composite(
     sheetTargets.map((name, index) => ({
-      input: path.join(OUTPUT, `${name}.png`),
+      input: path.join(OUTPUT, name),
       left: index * canvasWidth,
       top: 0,
     })),
