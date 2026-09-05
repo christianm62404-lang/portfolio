@@ -20,10 +20,10 @@ import { cn } from "@/lib/utils";
  */
 export function Hero({
   portraitSrc,
-  hiddenPortraits = [],
+  hiddenPortrait,
 }: {
   portraitSrc: string | null;
-  hiddenPortraits?: string[];
+  hiddenPortrait?: string | null;
 }) {
   const containerRef = useRef<HTMLElement>(null);
   const reduceMotion = useMotionPreference();
@@ -112,7 +112,7 @@ export function Hero({
               : undefined
           }
         >
-          <Portrait src={portraitSrc} hidden={hiddenPortraits} priority />
+          <Portrait src={portraitSrc} hidden={hiddenPortrait} priority />
         </motion.div>
 
         <div className="col col-lg relative">

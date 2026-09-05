@@ -15,14 +15,14 @@ import { cn } from "@/lib/utils";
  */
 export function Portrait({
   src,
-  hidden = [],
+  hidden,
   className,
   priority = false,
 }: {
   /** Resolved on the server, so a missing file never causes a failed request. */
   src: string | null;
-  /** The hidden mode's photographs, if any were found. */
-  hidden?: string[];
+  /** What stands in its place in the hidden mode, if that photograph exists. */
+  hidden?: string | null;
   className?: string;
   /** Set for the hero portrait, which is the largest-contentful paint. */
   priority?: boolean;
@@ -30,7 +30,7 @@ export function Portrait({
   const [failed, setFailed] = useState(false);
   const hiddenMode = useHiddenMode();
 
-  const showing = hidden.length > 0 && hiddenMode;
+  const showing = hiddenMode && Boolean(hidden);
 
   return (
     <div
@@ -48,32 +48,19 @@ export function Portrait({
       )}
     >
       {showing ? (
-        // A fixed collage: the first photograph tall down the left, the rest
-        // stacked beside it — which one leads is the order in site.ts, not a
-        // decision made here. All three are on screen at once, which a
-        // rotation could never manage, and the square frame divides into
-        // thirds without any of them being cropped harder than the headshot.
-        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-px bg-line">
-          {hidden.map((photo, index) => (
-            <div
-              key={photo}
-              className={cn(
-                "relative overflow-hidden bg-panel-2",
-                index === 0 && "row-span-2",
-              )}
-            >
-              <Image
-                src={photo}
-                alt=""
-                fill
-                sizes="(min-width: 1024px) 13rem, (min-width: 640px) 9rem, 31vw"
-                // Anchored to the top: these are phone portraits in a much
-                // shorter frame, and centring them crops the head off.
-                className="object-cover object-top"
-              />
-            </div>
-          ))}
-        </div>
+        // One photograph, filling the frame exactly as the headshot does. The
+        // other two are not here: they stand as columns of their own further
+        // along, which gives each of them room rather than a third of a square.
+        <Image
+          src={hidden as string}
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 26rem, (min-width: 640px) 18rem, 62vw"
+          // Anchored to the top: a phone portrait in a square frame, and
+          // centring it crops the head off.
+          className="object-cover object-top"
+          priority={priority}
+        />
       ) : failed || !src ? (
         // Reads as a monogram plate rather than a failed image: this is the
         // hero, so it has to look chosen while the photo is pending.

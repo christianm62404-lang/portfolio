@@ -25,15 +25,19 @@ export const site = {
    */
   portraitName: "headshot_full",
   /**
-   * Photographs the hidden mode shows in place of the headshot, by basename
-   * against public/. Listed rather than discovered so adding a stray image to
-   * public/ cannot silently join the set; any that are missing are skipped,
-   * and with none present the hero simply keeps the headshot.
+   * Photographs the hidden mode shows, one per panel, by basename against
+   * public/. Keyed by where each one goes rather than listed in order, so
+   * moving a photograph between sections is a change here and nowhere else.
    *
-   * Order is the layout: the first one is the tall panel down the left of the
-   * collage, the rest stack beside it.
+   * Named rather than discovered, so dropping a stray image into public/
+   * cannot silently join the set. Any that are missing are simply absent: the
+   * hero keeps the headshot, and the other panels render as they always do.
    */
-  hiddenPortraitNames: ["IMG_1937", "IMG_0454", "IMG_2024"],
+  hiddenPortraits: {
+    home: "IMG_1937",
+    personal: "IMG_0454",
+    contact: "IMG_2024",
+  },
   /**
    * The personal accounts, shown only in the hidden mode. Kept apart from
    * `socials` deliberately: those two are the professional links the ordinary

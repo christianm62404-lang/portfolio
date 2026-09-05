@@ -1,5 +1,6 @@
 import { site } from "@/content/site";
 import { MonoLabel, Panel, SectionHeading } from "@/components/ui/primitives";
+import { HiddenPhoto } from "@/components/ui/hidden-photo";
 import { Reveal } from "@/components/ui/reveal";
 
 /**
@@ -7,7 +8,7 @@ import { Reveal } from "@/components/ui/reveal";
  * which is the whole reason it can be this personal: the ordinary site leads
  * with GitHub and LinkedIn, and these are not those.
  */
-export function Personal() {
+export function Personal({ photo }: { photo?: string | null }) {
   return (
     <Panel id="personal">
       <SectionHeading
@@ -57,6 +58,8 @@ export function Personal() {
           </a>
         </Reveal>
       ))}
+
+      <HiddenPhoto src={photo} />
     </Panel>
   );
 }

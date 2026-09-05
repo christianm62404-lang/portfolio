@@ -53,10 +53,18 @@ export function Skills() {
         title="Grouped by where they sit in the stack"
         lede="Not by how good I claim to be at them. A percentage next to a language name has never told anyone anything true."
         meta={[
-          { label: "Groups", value: String(skillGroups.length).padStart(2, "0") },
+          {
+            label: "Groups",
+            value: String(skillGroups.length).padStart(2, "0"),
+          },
           {
             label: "Entries",
-            value: String(skillGroups.reduce((total, group) => total + group.items.length, 0)),
+            value: String(
+              skillGroups.reduce(
+                (total, group) => total + group.items.length,
+                0,
+              ),
+            ),
           },
           { label: "Rating bars", value: "0" },
         ]}
@@ -94,7 +102,9 @@ export function Skills() {
               <MonoLabel className={isActive ? "text-signal" : undefined}>
                 {group.index}
               </MonoLabel>
-              <span className="text-sm font-medium tracking-tight">{group.name}</span>
+              <span className="text-sm font-medium tracking-tight">
+                {group.name}
+              </span>
               <span
                 aria-hidden
                 className={cn(
@@ -117,7 +127,9 @@ export function Skills() {
         className="col col-xl border border-line bg-panel p-6 outline-offset-2"
       >
         <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
-          <h3 className="text-xl font-medium tracking-tight sm:text-2xl">{active.name}</h3>
+          <h3 className="text-xl font-medium tracking-tight sm:text-2xl">
+            {active.name}
+          </h3>
           <MonoLabel className="text-signal">
             {layer.index} · {layer.name}
           </MonoLabel>
@@ -153,7 +165,7 @@ export function Skills() {
               </motion.li>
             ))}
           </motion.ul>
-      </AnimatePresence>
+        </AnimatePresence>
       </div>
     </Panel>
   );

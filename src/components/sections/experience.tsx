@@ -1,5 +1,11 @@
 import { certifications, education, experience } from "@/content/experience";
-import { MonoLabel, Panel, SectionHeading, StatusDot, Tag } from "@/components/ui/primitives";
+import {
+  MonoLabel,
+  Panel,
+  SectionHeading,
+  StatusDot,
+  Tag,
+} from "@/components/ui/primitives";
 import { Reveal } from "@/components/ui/reveal";
 
 /** Roles as columns, read left to right in the order they happened. */
@@ -12,8 +18,14 @@ export function Experience() {
         title="Where the work happened"
         meta={[
           { label: "Roles", value: String(experience.length).padStart(2, "0") },
-          { label: "Institutions", value: String(education.length).padStart(2, "0") },
-          { label: "Certifications", value: String(certifications.length).padStart(2, "0") },
+          {
+            label: "Institutions",
+            value: String(education.length).padStart(2, "0"),
+          },
+          {
+            label: "Certifications",
+            value: String(certifications.length).padStart(2, "0"),
+          },
         ]}
       />
 
@@ -42,12 +54,20 @@ export function Experience() {
             {role.location}
           </p>
 
-          <p className="mt-4 text-[0.875rem] leading-relaxed text-ink-dim">{role.summary}</p>
+          <p className="mt-4 text-[0.875rem] leading-relaxed text-ink-dim">
+            {role.summary}
+          </p>
 
           <ul className="mt-4 space-y-2">
             {role.highlights.map((highlight) => (
-              <li key={highlight} className="flex gap-3 text-[0.8125rem] leading-relaxed text-ink-dim">
-                <span aria-hidden className="mt-2 block h-px w-3 shrink-0 bg-line-bright" />
+              <li
+                key={highlight}
+                className="flex gap-3 text-[0.8125rem] leading-relaxed text-ink-dim"
+              >
+                <span
+                  aria-hidden
+                  className="mt-2 block h-px w-3 shrink-0 bg-line-bright"
+                />
                 {highlight}
               </li>
             ))}
@@ -65,7 +85,10 @@ export function Experience() {
         </Reveal>
       ))}
 
-      <Reveal delay={0.16} className="col col-xs space-y-8 border-l border-line pl-8">
+      <Reveal
+        delay={0.16}
+        className="col col-xs space-y-8 border-l border-line pl-8"
+      >
         <div>
           <MonoLabel>Education</MonoLabel>
           <ul className="mt-3 divide-y divide-line border-y border-line">
@@ -79,7 +102,9 @@ export function Experience() {
                     {entry.period}
                   </span>
                 </div>
-                <p className="mt-1 text-[0.8125rem] text-ink-dim">{entry.credential}</p>
+                <p className="mt-1 text-[0.8125rem] text-ink-dim">
+                  {entry.credential}
+                </p>
               </li>
             ))}
           </ul>

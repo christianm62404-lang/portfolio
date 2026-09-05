@@ -19,7 +19,8 @@ export function findPortrait(): string | null {
   for (const extension of PORTRAIT_EXTENSIONS) {
     const file = `${site.portraitName}.${extension}`;
     try {
-      if (fs.existsSync(path.join(process.cwd(), "public", file))) return `/${file}`;
+      if (fs.existsSync(path.join(process.cwd(), "public", file)))
+        return `/${file}`;
     } catch {
       // An unreadable public directory is not worth failing the build over.
       return null;
@@ -28,23 +29,33 @@ export function findPortrait(): string | null {
   return null;
 }
 
+/** Where a hidden-mode photograph can go. */
+export type HiddenPortraitSlot = keyof typeof site.hiddenPortraits;
+
 /**
- * The hidden mode's photographs, in the order they are shown. Server-only, and
- * resolved the same way as the headshot: whatever is actually on disk, in
- * whichever format it was saved as.
+ * The hidden mode's photographs, resolved to public paths by slot.
+ *
+ * Server-only, and resolved the same way as the headshot: whatever is actually
+ * on disk, in whichever format it was saved as. A slot whose file is missing is
+ * left out, so every caller can treat it as optional.
  */
-export function findHiddenPortraits(): string[] {
-  const found: string[] = [];
-  for (const name of site.hiddenPortraitNames) {
+export function findHiddenPortraits(): Partial<
+  Record<HiddenPortraitSlot, string>
+> {
+  const found: Partial<Record<HiddenPortraitSlot, string>> = {};
+  for (const [slot, name] of Object.entries(site.hiddenPortraits) as [
+    HiddenPortraitSlot,
+    string,
+  ][]) {
     for (const extension of PORTRAIT_EXTENSIONS) {
       const file = `${name}.${extension}`;
       try {
         if (fs.existsSync(path.join(process.cwd(), "public", file))) {
-          found.push(`/${file}`);
+          found[slot] = `/${file}`;
           break;
         }
       } catch {
-        return [];
+        return {};
       }
     }
   }

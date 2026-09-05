@@ -46,7 +46,7 @@ export default function Home() {
             <>
               <Hero
                 portraitSrc={portraitSrc}
-                hiddenPortraits={hiddenPortraits}
+                hiddenPortrait={hiddenPortraits.home}
               />
               <About />
               <Work />
@@ -60,11 +60,11 @@ export default function Home() {
             <>
               <Hero
                 portraitSrc={portraitSrc}
-                hiddenPortraits={hiddenPortraits}
+                hiddenPortrait={hiddenPortraits.home}
               />
               <Experience />
-              <Personal />
-              <Contact />
+              <Personal photo={hiddenPortraits.personal} />
+              <Contact photo={hiddenPortraits.contact} />
             </>
           }
         />

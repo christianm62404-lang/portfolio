@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { site } from "@/content/site";
 import { MonoLabel, Panel, StatusDot } from "@/components/ui/primitives";
+import { HiddenPhoto } from "@/components/ui/hidden-photo";
 import { Reveal } from "@/components/ui/reveal";
 
 /**
  * The last panel. One clear action, two links, and no form — a form here would
  * only add a failure mode between someone and an email address.
  */
-export function Contact() {
+export function Contact({ photo }: { photo?: string | null }) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -43,9 +44,9 @@ export function Contact() {
         </h2>
 
         <p className="mt-6 text-[0.9375rem] leading-relaxed text-ink-dim">
-          I&apos;m looking for software, embedded, or systems internships for 2026 and
-          beyond. If you have something that spans more than one layer of the stack,
-          that is the kind of problem I want.
+          I&apos;m looking for software, embedded, or systems internships for
+          2026 and beyond. If you have something that spans more than one layer
+          of the stack, that is the kind of problem I want.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3">
@@ -73,7 +74,10 @@ export function Contact() {
         </div>
       </Reveal>
 
-      <Reveal delay={0.08} className="col flex flex-col justify-center gap-px bg-line">
+      <Reveal
+        delay={0.08}
+        className="col flex flex-col justify-center gap-px bg-line"
+      >
         <ContactTile
           label="Email"
           value={site.email}
@@ -98,6 +102,8 @@ export function Contact() {
           />
         ))}
       </Reveal>
+
+      <HiddenPhoto src={photo} />
     </Panel>
   );
 }

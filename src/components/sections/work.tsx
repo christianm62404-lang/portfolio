@@ -14,7 +14,9 @@ export function Work() {
           { label: "Entries", value: String(projects.length).padStart(2, "0") },
           {
             label: "Treatments",
-            value: String(new Set(projects.map((project) => project.visual)).size).padStart(2, "0"),
+            value: String(
+              new Set(projects.map((project) => project.visual)).size,
+            ).padStart(2, "0"),
           },
           {
             label: "Layers spanned",

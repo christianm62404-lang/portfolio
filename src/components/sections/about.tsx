@@ -24,23 +24,24 @@ export function About() {
       <Reveal className="col col-lg space-y-5 text-[0.9375rem] leading-[1.7] text-ink-dim">
         <p>
           I&apos;m a computer engineering student at UCF. The degree puts analog
-          electronics and operating systems in the same semester, and after a while
-          you stop treating them as separate subjects.
+          electronics and operating systems in the same semester, and after a
+          while you stop treating them as separate subjects.
         </p>
         <p>
-          Electronics came first — biasing transistors, sketching Bode plots, arguing
-          with LTspice about why the breadboard disagreed with the screen. Then
-          programming, then embedded systems, where the two finally met. There is a
-          bug you only get on a microcontroller, where the code is right and the
-          timing is wrong; learning to find those changed how I debug everything else.
+          Electronics came first — biasing transistors, sketching Bode plots,
+          arguing with LTspice about why the breadboard disagreed with the
+          screen. Then programming, then embedded systems, where the two finally
+          met. There is a bug you only get on a microcontroller, where the code
+          is right and the timing is wrong; learning to find those changed how I
+          debug everything else.
         </p>
         <p>
           Now most of my week goes into software, as a developer intern at{" "}
           <span className="text-ink">Intrastack Solutions</span> — leading the
-          front-end track on an AI proposal platform and working on the CRM side of a
-          multi-service point-of-sale system. I like building things that work end to
-          end, and knowing what happens one layer below wherever I am. Different
-          vocabulary, same curiosity.
+          front-end track on an AI proposal platform and working on the CRM side
+          of a multi-service point-of-sale system. I like building things that
+          work end to end, and knowing what happens one layer below wherever I
+          am. Different vocabulary, same curiosity.
         </p>
       </Reveal>
 
@@ -76,7 +77,9 @@ export function About() {
                   className="flex items-baseline justify-between gap-4 text-sm text-ink-dim"
                 >
                   <span>{entry.institution}</span>
-                  <span className="font-mono text-xs text-ink-faint">{entry.period}</span>
+                  <span className="font-mono text-xs text-ink-faint">
+                    {entry.period}
+                  </span>
                 </li>
               ))}
           </ul>
