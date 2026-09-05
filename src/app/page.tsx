@@ -7,6 +7,7 @@ import { Backdrop } from "@/components/world/backdrop";
 import { World } from "@/components/world/world";
 import { UnlockWatcher } from "@/components/world/unlock-watcher";
 import { LedRail } from "@/components/world/led-rail";
+import { ModeTransition } from "@/components/world/mode-transition";
 import { TrackSections } from "@/components/layout/track-sections";
 import { Personal } from "@/components/sections/personal";
 import { Hero } from "@/components/sections/hero";
@@ -71,6 +72,7 @@ export default function Home() {
       </TrackViewport>
       <World manifest={sprites} />
       <UnlockWatcher />
+      <ModeTransition />
     </TrackProvider>
   );
 }

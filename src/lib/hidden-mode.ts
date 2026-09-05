@@ -41,21 +41,77 @@ export function isHiddenMode() {
   return document.documentElement.getAttribute(MODE_ATTRIBUTE) === HIDDEN_MODE;
 }
 
-export function setHiddenMode(on: boolean) {
+/**
+ * Applies the mode with no ceremony, behind whatever is covering the screen.
+ *
+ * Flushed, so the sprite and the photographs have actually re-rendered by the
+ * time this returns: a caller hiding the swap behind a hand or a wipe has only
+ * that instant to make it, and a re-render React has merely scheduled is not
+ * in it.
+ */
+export function commitHiddenMode(on: boolean) {
   if (on === isHiddenMode()) return;
   const root = document.documentElement;
-  runWipe(() => {
-    if (on) root.setAttribute(MODE_ATTRIBUTE, HIDDEN_MODE);
-    else root.removeAttribute(MODE_ATTRIBUTE);
-    // Inside the commit, and flushed, for two reasons. Notifying before it
-    // would have every subscriber read the attribute it is about to change,
-    // so the sprite and the photographs would lag a whole toggle behind. And
-    // a view transition photographs the page the instant this callback
-    // returns, so a re-render React has merely scheduled is not in the new
-    // snapshot — the wipe would reveal the old character and the new one
-    // would pop in afterwards.
-    flushSync(emit);
-  });
+  if (on) root.setAttribute(MODE_ATTRIBUTE, HIDDEN_MODE);
+  else root.removeAttribute(MODE_ATTRIBUTE);
+  flushSync(emit);
+}
+
+export function setHiddenMode(on: boolean) {
+  if (on === isHiddenMode()) return;
+
+  // Going in, the character reaches out and puts a hand over the lens; the
+  // swap happens behind it. Coming out stays the diagonal wipe — leaving
+  // should be a quiet way back to the ordinary site, not a second performance.
+  if (on) {
+    beginEntry();
+    return;
+  }
+
+  runWipe(() => commitHiddenMode(false));
+}
+
+/* ------------------------------- the entrance ------------------------------ */
+
+/** Frames of the entrance, in order. There is no t5; the art skips it. */
+export const ENTRY_FRAMES = ["t1", "t2", "t3", "t4", "t6", "t7", "t8"].map(
+  (name) => `/sprite/${name}.png`,
+);
+
+type EntryPhase = "idle" | "entering";
+let entryPhase: EntryPhase = "idle";
+const phaseListeners = new Set<Listener>();
+
+function emitPhase() {
+  for (const listener of phaseListeners) listener();
+}
+
+function beginEntry() {
+  if (entryPhase !== "idle") return;
+  entryPhase = "entering";
+  emitPhase();
+}
+
+/** Called by the overlay once it has finished playing and faded away. */
+export function endEntry() {
+  entryPhase = "idle";
+  emitPhase();
+}
+
+/** Whether the entrance is playing, safe to branch on during render. */
+export function useEntryPhase() {
+  const subscribe = useCallback((onChange: Listener) => {
+    phaseListeners.add(onChange);
+    return () => {
+      phaseListeners.delete(onChange);
+    };
+  }, []);
+
+  return useSyncExternalStore(
+    subscribe,
+    () => entryPhase,
+    () => "idle" as const,
+  );
 }
 
 /**
