@@ -1,5 +1,6 @@
 "use client";
 
+import { isHiddenMode, setHiddenMode } from "@/lib/hidden-mode";
 import { applyTheme, nextTheme, readAppliedTheme, storeTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,14 @@ export function ThemeToggle({ className }: { className?: string }) {
   // CSS, and the click handler reads that same attribute. Nothing here needs
   // to re-render, so nothing here does.
   const cycle = () => {
+    // This button is also the way out of the hidden mode — the only way, since
+    // nothing on the page names it. Leaving comes first: whoever is in there
+    // pressing this wants the ordinary site back, not a theme change on top of
+    // a palette they did not ask for.
+    if (isHiddenMode()) {
+      setHiddenMode(false);
+      return;
+    }
     const next = nextTheme(readAppliedTheme());
     applyTheme(next);
     storeTheme(next);

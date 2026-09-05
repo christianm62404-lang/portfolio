@@ -37,13 +37,30 @@ const TARGET_HEIGHT = 620; // standing height in the output canvas
 const CANVAS_PADDING = 10; // breathing room so scaling never clips an outline
 
 /**
+ * Canvas width is normally the widest frame in the batch plus padding, which is
+ * right when the whole set is processed together. Adding frames to an existing
+ * set is the exception: pass --width to pin the canvas to the sheet already on
+ * disk, so the new frames drop in without every other frame having to be
+ * re-processed (each pass erodes the silhouette again, so re-running over
+ * finished art slowly eats it).
+ */
+const widthFlag = process.argv.indexOf("--width");
+const FORCED_WIDTH = widthFlag === -1 ? null : Number(process.argv[widthFlag + 1]);
+
+/**
  * Mid-stride frames are drawn a touch shorter than the standing ones, because
  * a walking body is: it is lowest with the legs apart and tallest at the
  * passing position. Normalising every frame to exactly the same height would
  * iron that out and leave the walk looking like a slide.
  */
 const STRIDE_SCALE = 0.965;
-const isStride = (name) => !name.startsWith("face");
+/**
+ * Standing poses, held at full height. The smolder frames replace face-forward
+ * when the hidden mode is on, so they have to measure exactly as tall as it
+ * does or the character grows the moment the mode turns on.
+ */
+const isStanding = (name) => name.startsWith("face") || name.startsWith("smolder");
+const isStride = (name) => !isStanding(name);
 
 /** Source file (however it is named) → the name the site expects. */
 const RENAMES = {
@@ -216,7 +233,14 @@ for (const m of measured) {
 // canvas, so every frame plants them on the same line and the shorter
 // mid-stride frames simply carry more empty space over the head.
 const canvasHeight = TARGET_HEIGHT + CANVAS_PADDING;
-const canvasWidth = Math.max(...measured.map((m) => m.drawnWidth)) + CANVAS_PADDING * 2;
+const measuredWidth = Math.max(...measured.map((m) => m.drawnWidth)) + CANVAS_PADDING * 2;
+if (FORCED_WIDTH && measuredWidth > FORCED_WIDTH) {
+  console.error(
+    `--width ${FORCED_WIDTH} is narrower than the ${measuredWidth} these frames need; they would be clipped.`,
+  );
+  process.exit(1);
+}
+const canvasWidth = FORCED_WIDTH ?? measuredWidth;
 
 console.log(`\ncanvas ${canvasWidth} x ${canvasHeight}\n`);
 

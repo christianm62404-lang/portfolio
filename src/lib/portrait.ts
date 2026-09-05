@@ -27,3 +27,26 @@ export function findPortrait(): string | null {
   }
   return null;
 }
+
+/**
+ * The hidden mode's photographs, in the order they are shown. Server-only, and
+ * resolved the same way as the headshot: whatever is actually on disk, in
+ * whichever format it was saved as.
+ */
+export function findHiddenPortraits(): string[] {
+  const found: string[] = [];
+  for (const name of site.hiddenPortraitNames) {
+    for (const extension of PORTRAIT_EXTENSIONS) {
+      const file = `${name}.${extension}`;
+      try {
+        if (fs.existsSync(path.join(process.cwd(), "public", file))) {
+          found.push(`/${file}`);
+          break;
+        }
+      } catch {
+        return [];
+      }
+    }
+  }
+  return found;
+}

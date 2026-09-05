@@ -44,11 +44,21 @@ type ViewTransitionDocument = Document & {
 export function applyTheme(preference: ThemePreference) {
   const root = document.documentElement;
 
-  const commit = () => {
+  runWipe(() => {
     if (preference) root.dataset.theme = preference;
     else delete root.dataset.theme;
-  };
+  });
+}
 
+/**
+ * Runs a change to the palette behind the diagonal wipe.
+ *
+ * Exported because the hidden mode repaints the same tokens and should arrive
+ * the same way: one reveal from the top-right corner, not a second kind of
+ * transition sitting beside this one.
+ */
+export function runWipe(commit: () => void) {
+  const root = document.documentElement;
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const startViewTransition = (document as ViewTransitionDocument).startViewTransition;
 
@@ -59,7 +69,7 @@ export function applyTheme(preference: ThemePreference) {
 
   root.setAttribute(WIPE_ATTRIBUTE, "");
   // A transition can be skipped — by a second click, or by the tab being
-  // hidden. `finished` settles either way, and the theme is already applied,
+  // hidden. `finished` settles either way, and the change is already applied,
   // so clearing the attribute is all the cleanup there is.
   startViewTransition
     .call(document, commit)

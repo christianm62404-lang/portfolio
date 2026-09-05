@@ -18,7 +18,13 @@ import { cn } from "@/lib/utils";
  * pointer can fire dozens of events per second and none of them should cause
  * a re-render of the panel.
  */
-export function Hero({ portraitSrc }: { portraitSrc: string | null }) {
+export function Hero({
+  portraitSrc,
+  hiddenPortraits = [],
+}: {
+  portraitSrc: string | null;
+  hiddenPortraits?: string[];
+}) {
   const containerRef = useRef<HTMLElement>(null);
   const reduceMotion = useMotionPreference();
   const canHover = usePointerFine();
@@ -106,7 +112,7 @@ export function Hero({ portraitSrc }: { portraitSrc: string | null }) {
               : undefined
           }
         >
-          <Portrait src={portraitSrc} priority />
+          <Portrait src={portraitSrc} hidden={hiddenPortraits} priority />
         </motion.div>
 
         <div className="col col-lg relative">

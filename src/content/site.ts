@@ -24,6 +24,13 @@ export const site = {
    * exists the hero renders a monogram plate instead.
    */
   portraitName: "headshot_full",
+  /**
+   * Photographs the hidden mode shows in place of the headshot, by basename
+   * against public/. Listed rather than discovered so adding a stray image to
+   * public/ cannot silently join the set; any that are missing are skipped,
+   * and with none present the hero simply keeps the headshot.
+   */
+  hiddenPortraitNames: ["IMG_0454", "IMG_1937", "IMG_2024"],
   socials: [
     { label: "GitHub", handle: "christianm62404-lang", href: "https://github.com/christianm62404-lang" },
     {

@@ -261,6 +261,31 @@
   color-scheme: dark;
 }
 
+/* The hidden mode.
+
+   Only the accents move. Canvas, panel and ink stay exactly as they are, so
+   the page reads as the same site with a different temperature rather than as
+   a second design — and so the contrast work behind the text tokens is not
+   quietly undone by a mode nobody is checking.
+
+   These are the same registered custom properties the theme uses, so the
+   change rides the same view-transition wipe and, where that is unavailable,
+   the same token cross-fade. */
+:root[data-mode="matthew"] {
+  --signal: #e2606c;
+  --signal: light-dark(#9b1c33, #e2606c);
+
+  --signal-soft: #ef8a92;
+  --signal-soft: light-dark(#821428, #ef8a92);
+
+  --aura-violet: rgb(224 74 84 / 0.32);
+  --aura-violet: light-dark(rgb(196 40 56 / 0.19), rgb(224 74 84 / 0.32));
+  --aura-indigo: rgb(158 28 44 / 0.30);
+  --aura-indigo: light-dark(rgb(140 24 40 / 0.15), rgb(158 28 44 / 0.30));
+  --aura-magenta: rgb(238 108 92 / 0.22);
+  --aura-magenta: light-dark(rgb(206 66 52 / 0.12), rgb(238 108 92 / 0.22));
+}
+
 @theme inline {
   --color-canvas: var(--canvas);
   --color-panel: var(--panel);
@@ -520,42 +545,6 @@
       transparent 62%
     );
   }
-  /* The light that follows the pointer, drawn as two layers.
-
-     Colours are set per theme rather than mixed from one token: on a dark
-     ground a pale violet reads as light, while on a light ground that same mix
-     only greys the page, so light mode gets a more saturated violet that stays
-     purple as it washes out. */
-  .cursor-glow {
-    will-change: transform;
-  }
-
-  /* The bright half, painted behind the sections. Free to be this strong
-     because nothing legible sits on top of it: at full strength in the gaps
-     between frames, and diffused to roughly a third of that through a frame's
-     frosted panel. */
-  .cursor-glow-under {
-    background: radial-gradient(
-      closest-side,
-      light-dark(rgb(139 92 246 / 0.4), rgb(167 139 255 / 0.34)),
-      light-dark(rgb(139 92 246 / 0.19), rgb(167 139 255 / 0.16)) 45%,
-      transparent 78%
-    );
-  }
-
-  /* The quiet half, painted over the sections, so the light still reads where
-     a frame would otherwise wash it out. Its ceiling is set by the faintest
-     text on the site rather than by taste: at this alpha --ink-faint and
-     --live both stay above 5:1 with the glow sitting directly on them. */
-  .cursor-glow-over {
-    background: radial-gradient(
-      closest-side,
-      light-dark(rgb(139 92 246 / 0.08), rgb(167 139 255 / 0.08)),
-      light-dark(rgb(139 92 246 / 0.04), rgb(167 139 255 / 0.04)) 45%,
-      transparent 78%
-    );
-  }
-
   .signal-wash {
     background: radial-gradient(
       60rem 40rem at 30% 20%,

@@ -16,6 +16,10 @@ export const SPRITE_FILES = {
   leftRight: "left-right.png",
   rightLeft: "right-left.png",
   rightRight: "right-right.png",
+  /* Resting frames for the hidden mode. `smolder` stands in for `forward`, and
+     `smolderEyebrow` is the one it flicks to. */
+  smolder: "smolder.png",
+  smolderEyebrow: "smolder-eyebrow.png",
 } as const;
 
 export type SpriteRole = keyof typeof SPRITE_FILES;

@@ -4,11 +4,16 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { navItems, site } from "@/content/site";
 import { useActiveSection } from "@/hooks/use-active-section";
-import { useTrackElement, useTrackNavigation, useTrackProgress } from "@/components/layout/track";
+import {
+  useTrackElement,
+  useTrackNavigation,
+  useTrackProgress,
+} from "@/components/layout/track";
 import { MonoLabel, StatusDot } from "@/components/ui/primitives";
 import { ButtonLink } from "@/components/ui/button";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { noteMonogramTap } from "@/lib/hidden-mode";
 import { cn } from "@/lib/utils";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
 
@@ -31,7 +36,10 @@ export function Nav() {
     return progress.on("change", update);
   }, [progress]);
 
-  const onNavigate = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+  const onNavigate = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    id: string,
+  ) => {
     if (!goToSection) return;
     event.preventDefault();
     goToSection(id);
@@ -50,7 +58,9 @@ export function Nav() {
         aria-hidden
         className={cn(
           "absolute inset-0 border-b bg-canvas/80 backdrop-blur-xl transition-opacity duration-400 ease-[var(--ease-out-expo)]",
-          condensed ? "border-line opacity-100" : "border-transparent opacity-0",
+          condensed
+            ? "border-line opacity-100"
+            : "border-transparent opacity-0",
         )}
       />
 
@@ -62,6 +72,10 @@ export function Nav() {
           aria-label={`${site.name} — back to the start`}
         >
           <span
+            // Finishes the hidden mode's sequence on a touch screen, where
+            // there is no keyboard to type the other half into.
+            data-unlock="monogram"
+            onPointerDown={noteMonogramTap}
             className={cn(
               "grid place-items-center border border-line-bright font-mono text-[0.6875rem] font-medium tracking-[0.08em] transition-all duration-500 ease-[var(--ease-out-expo)]",
               condensed ? "size-8" : "size-9",
@@ -71,7 +85,9 @@ export function Nav() {
             {site.initials}
           </span>
           <span className="hidden flex-col leading-none sm:flex">
-            <span className="text-sm font-medium tracking-tight">{site.name}</span>
+            <span className="text-sm font-medium tracking-tight">
+              {site.name}
+            </span>
             <span className="label-mono mt-1.5 tracking-[0.14em]">
               Computer Engineering
             </span>
@@ -156,7 +172,14 @@ export function Nav() {
 
 function ArrowUpRight() {
   return (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden focusable="false">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      aria-hidden
+      focusable="false"
+    >
       <path
         d="M3.5 8.5L8.5 3.5M8.5 3.5H4.5M8.5 3.5V7.5"
         stroke="currentColor"

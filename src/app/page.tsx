@@ -1,11 +1,11 @@
-import { findPortrait } from "@/lib/portrait";
+import { findHiddenPortraits, findPortrait } from "@/lib/portrait";
 import { readSpriteManifest } from "@/lib/sprite";
 import { TrackProvider, TrackViewport } from "@/components/layout/track";
 import { Nav } from "@/components/layout/nav";
 import { ScrollProgress } from "@/components/layout/scroll-progress";
 import { Backdrop } from "@/components/world/backdrop";
-import { CursorGlow } from "@/components/world/cursor-glow";
 import { World } from "@/components/world/world";
+import { UnlockWatcher } from "@/components/world/unlock-watcher";
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
 import { Work } from "@/components/sections/work";
@@ -28,6 +28,7 @@ import { Contact } from "@/components/sections/contact";
  */
 export default function Home() {
   const portraitSrc = findPortrait();
+  const hiddenPortraits = findHiddenPortraits();
   const sprites = readSpriteManifest();
 
   return (
@@ -36,7 +37,7 @@ export default function Home() {
       <ScrollProgress />
       <Nav />
       <TrackViewport>
-        <Hero portraitSrc={portraitSrc} />
+        <Hero portraitSrc={portraitSrc} hiddenPortraits={hiddenPortraits} />
         <About />
         <Work />
         <Labs />
@@ -44,8 +45,8 @@ export default function Home() {
         <Experience />
         <Contact />
       </TrackViewport>
-      <CursorGlow />
       <World manifest={sprites} />
+      <UnlockWatcher />
     </TrackProvider>
   );
 }

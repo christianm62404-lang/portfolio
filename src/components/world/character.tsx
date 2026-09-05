@@ -3,12 +3,17 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useTravelDirection } from "@/components/layout/track";
+import { useHiddenMode } from "@/lib/hidden-mode";
 import { useMotionPreference } from "@/hooks/use-motion-preference";
 import type { SpriteManifest, SpriteRole } from "@/lib/sprite";
 import { cn } from "@/lib/utils";
 
 /** Milliseconds per frame. Slow enough to read as steps, not a flicker. */
 const FRAME_MS = 135;
+
+/** In the hidden mode: how long he holds the smoulder, and the raised brow. */
+const SMOULDER_MS = 12_000;
+const EYEBROW_MS = 3_000;
 
 /**
  * The walk cycles, as pairs of [role, mirrored].
@@ -64,9 +69,48 @@ function resolve(frame: Frame, manifest: SpriteManifest) {
 export function Character({ manifest }: { manifest: SpriteManifest }) {
   const direction = useTravelDirection();
   const reduceMotion = useMotionPreference();
+  const hidden = useHiddenMode();
   const [step, setStep] = useState(0);
+  const [brow, setBrow] = useState(false);
+  const [browBelongsTo, setBrowBelongsTo] = useState(false);
 
   const walking = direction !== 0 && !reduceMotion;
+  const resting = hidden && direction === 0;
+
+  // Drop the raised brow the moment he starts or stops moving, so the next
+  // spell of stillness begins on the smoulder rather than resuming wherever
+  // the last one was interrupted. Adjusting state during render is React's
+  // own answer to "reset this when that changes" — doing it in an effect
+  // would paint the stale frame first and then correct it.
+  if (browBelongsTo !== resting) {
+    setBrowBelongsTo(resting);
+    setBrow(false);
+  }
+
+  // The brow flick, on its own clock: twelve seconds of stillness, three
+  // seconds raised, and back. The effect is keyed on `resting`, so any step
+  // he takes tears the timer down and the count starts again from the moment
+  // he next stands still — which is what "twelve seconds without moving"
+  // means, rather than twelve seconds of wall clock.
+  useEffect(() => {
+    if (!resting) return;
+    let raise: ReturnType<typeof setTimeout>;
+    let lower: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      raise = setTimeout(() => {
+        setBrow(true);
+        lower = setTimeout(() => {
+          setBrow(false);
+          schedule();
+        }, EYEBROW_MS);
+      }, SMOULDER_MS);
+    };
+    schedule();
+    return () => {
+      clearTimeout(raise);
+      clearTimeout(lower);
+    };
+  }, [resting]);
 
   // Restarting on each change of direction means a walk always begins on the
   // first frame of its cycle rather than wherever the previous one left off.
@@ -87,15 +131,22 @@ export function Character({ manifest }: { manifest: SpriteManifest }) {
   if (Object.keys(manifest).length === 0) return null;
 
   const cycle = direction === 1 ? WALK_RIGHT : WALK_LEFT;
+  // Only the standing-still frame changes in the hidden mode. He walks the
+  // same way in it, because the walk cycle has no smouldering counterpart and
+  // inventing one would make him a different character mid-stride.
+  const standing: Frame = resting
+    ? { role: brow ? "smolderEyebrow" : "smolder" }
+    : { role: "forward" };
   const frame: Frame = walking
     ? cycle[step % cycle.length]
     : direction === 0
-      ? { role: "forward" }
+      ? standing
       : direction === 1
         ? { role: "faceRight" }
         : { role: "faceLeft" };
 
-  const resolved = resolve(frame, manifest) ?? resolve({ role: "forward" }, manifest);
+  const resolved =
+    resolve(frame, manifest) ?? resolve({ role: "forward" }, manifest);
   if (!resolved) return null;
 
   return (
